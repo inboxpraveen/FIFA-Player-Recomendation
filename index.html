@@ -18,7 +18,6 @@
   <link rel="stylesheet" href="assets/css/style.css">
   <link href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet">
   
-  <script src="assets/js/main.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 </head>
@@ -37,7 +36,9 @@
     </ul>
   </nav>
 
-  <div class="main-header">
+  <a href="#main-header" class="back-to-top" id="back-to-top">GO TOP</a>
+
+  <div class="main-header" id="main-header">
     <h1>FIFA Player Analysis &amp; Recommendation</h1>
     <p>some more info</p>
     <span class="main-header-buttons">
@@ -54,7 +55,7 @@
       </div>
       <div class="analysis-container-box-item">
         <h1>my heading for this graph</h1>
-        <p>information on explanation of the analysis done by understandin the graph</p>
+        <p>information on explanation of the analysis done by weadfg bajewbfj bawjfgjhwdbgfhjsadhjf hwjad fawgf hawejfwj as gfywasd gfyawsejhf bawjeh fuyawfwhjfwhj fhjwe fujweadf wadjhs fywedafy understandin the graph</p>
       </div>
     </div>
 
@@ -89,27 +90,56 @@
   </div>
 
   <script>
-  $(document).ready(function(){
-    // Add smooth scrolling to all links
-    $("a").on('click', function(event) {
-      // Make sure this.hash has a value before overriding default behavior
-      if (this.hash !== "") {
-        // Prevent default anchor click behavior
-        event.preventDefault();
+    $(document).ready(function(){
+      // Add smooth scrolling to all links
+      $("a").on('click', function(event) {
+        // Make sure this.hash has a value before overriding default behavior
+        if (this.hash !== "") {
+          // Prevent default anchor click behavior
+          event.preventDefault();
 
-        // Store hash
-        var hash = this.hash;
+          // Store hash
+          var hash = this.hash;
 
-        // Using jQuery's animate() method to add smooth page scroll
-        // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
-        $('html, body').animate({
+          // Using jQuery's animate() method to add smooth page scroll
+          // The optional number (800) specifies the number of milliseconds it takes to scroll to the specified area
+          $('html, body').animate({
+            scrollTop: $(hash).offset().top
+          }, 800, function(){
+            window.location.hash = hash;
+          });
+        } // End if
+      });
+    });
+
+    //Get the button
+    let mybutton = document.getElementById("back-to-top");
+
+    // When the user scrolls down 20px from the top of the document, show the button
+    window.onscroll = function () {
+      scrollFunction();
+    };
+
+    function scrollFunction() {
+      if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+        mybutton.style.display = "block";
+      } else {
+        mybutton.style.display = "none";
+      }
+    }
+    // When the user clicks on the button, scroll to the top of the document
+    mybutton.addEventListener("click", backToTop);
+
+    function backToTop() {
+      $('html, body').animate({
           scrollTop: $(hash).offset().top
         }, 800, function(){
           window.location.hash = hash;
         });
-      } // End if
-    });
-  });
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+
   </script>
 
 </body>

@@ -455,3 +455,22 @@ a {
   }
 }
 
+
+
+/* ---------------------------------------------------------------- */
+/*                            GO-TOP                                */
+/* ---------------------------------------------------------------- */
+
+.back-to-top{
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  display: none;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 0.5em;
+  border-radius: 0.25em;
+}
+
+
+
