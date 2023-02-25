@@ -376,8 +376,8 @@ a {
 
 .main-header h1 {
   font-size: 3rem;
-  margin: 0;
-  padding: 0;
+  margin: 0.5rem;
+  padding: 0.25rem;
 }
 
 .main-header p {
@@ -408,53 +408,82 @@ a {
 /*                            ANALYSIS                              */
 /* ---------------------------------------------------------------- */
 
-.analysis-container {
+.analysis-section {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
+  scroll-behavior: smooth;
+  margin: 0 auto;
+  width: auto;
+  box-sizing: border-box;
+  height: max-content;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.25)) ,url("../img/bg/1.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  height: max-content;
+  overflow: hidden;
+}
+
+.analysis-card {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  text-align: center;
   justify-content: center;
   align-items: center;
-  text-align: center;
-
-  scroll-behavior: smooth;
+  flex: 0 1 50%;
   max-width: 100%;
-  height: 100vh;
-  width: 100%;
   margin: 0;
-  padding: 1rem;
-
-  -webkit-align-items: stretch;
-  box-sizing: border-box;
+  padding: 2rem;
 }
 
-.analysis-container-box {
-  display: flex;
-  width: 100%;
-  max-height: 100%;
-  flex-wrap: wrap;
-  vertical-align: middle;
-  align-content: center;
+.analysis-card h1 {
+  font-size: 2rem;
+  padding: 0.5rem 0.25rem;
 }
 
-.analysis-container-box-item {
-  flex-basis: calc(50vw-1.25rem);
-  padding: 0.25rem;
-  margin: 1rem;
-  border-style: solid;
-  border-color: #5f2828;
-  border-width: 5px;
-}
-
-.analysis-container-box-item img {
+.analysis-card p {
+  font-size: 1.25rem;
+  padding: 0.5rem 0.25rem;
   max-width: 100%;
+  margin: 0;
+}
+
+.analysis-card img {
+  width: auto;
+  max-width: 90%;
+  margin: 2em 0.5em;
   height: auto;
 }
 
-@media screen and (max-width: 768px) {
-  .analysis-container-box-item {
-    flex-basis: 100%;
-  }
+.analysis-card img:hover {
+  width: auto;
+  max-width: 100%;
+  transform: scale(1.05);
 }
 
+@media screen and (max-width: 781px) {
+  .analysis-card {
+    width: auto;
+  }
+  .analysis-card h1 {
+    font-size: 1.5rem;
+  }
+  .analysis-card p {
+    font-size: 1rem;
+  }
+  
+  .analysis-card img {
+    width: 100%;
+    max-width: 100%;
+  }
+  .analysis-card img:hover {
+    transform: scale(1.1);
+  }
+}
 
 
 /* ---------------------------------------------------------------- */
