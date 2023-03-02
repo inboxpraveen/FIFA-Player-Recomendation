@@ -417,7 +417,7 @@ a {
   width: auto;
   box-sizing: border-box;
   height: max-content;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.25)) ,url("../img/bg/1.png");
+  background-image: linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.25)), url("../img/bg/1.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
@@ -469,17 +469,20 @@ a {
   .analysis-card {
     width: auto;
   }
+
   .analysis-card h1 {
     font-size: 1.5rem;
   }
+
   .analysis-card p {
     font-size: 1rem;
   }
-  
+
   .analysis-card img {
     width: 100%;
     max-width: 100%;
   }
+
   .analysis-card img:hover {
     transform: scale(1.1);
   }
@@ -490,7 +493,7 @@ a {
 /*                            GO-TOP                                */
 /* ---------------------------------------------------------------- */
 
-.back-to-top{
+.back-to-top {
   position: fixed;
   bottom: 1em;
   right: 1em;
@@ -500,6 +503,3 @@ a {
   padding: 0.5em;
   border-radius: 0.25em;
 }
-
-
-
