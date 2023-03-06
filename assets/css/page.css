@@ -12,11 +12,6 @@ body {
     padding: 0;
     opacity: 1;
     overflow: hidden;
-    z-index: 100;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0.5)), url("../images/hero-background.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position:center;
 }
 
 a {
@@ -196,7 +191,7 @@ a {
 #myVideo {
     position: fixed;
     right: 0;
-    opacity: 0.05;
+    opacity: 0.75;
     bottom: 0;
     min-width: 100%;
     min-height: 100%;
