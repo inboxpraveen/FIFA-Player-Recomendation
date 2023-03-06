@@ -46,20 +46,12 @@ a {
     text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
 }
 
-.two p {
-    text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+.button-for-demo-and-anaylsis a{
+    margin: 2px 5px;
+    background: #000;
+    padding: 0.5rem 1rem;
 }
 
-.two .typed-text {
-    font-weight: bolder;
-    font-size: 1em;
-    padding: 1px 5px;
-    color: #c341ff;
-}
-
-.two .blinker {
-    font-size: 1em;
-}
 
 .three{
     display: flex;
@@ -92,7 +84,7 @@ a {
         font-weight: 650;
     }
 
-    .two p {
+    .button-for-demo-and-anaylsis a {
         font-size: 1.5rem;
     }
 
@@ -110,7 +102,7 @@ a {
         font-weight: 700;
     }
 
-    .two p {
+    .button-for-demo-and-anaylsis a {
         font-size: 1.75rem;
     }
 
@@ -127,7 +119,7 @@ a {
         font-weight: 750;
     }
     
-    .two p {
+    .button-for-demo-and-anaylsis a {
         font-size: 2rem;
     }
 
@@ -144,7 +136,7 @@ a {
         font-weight: 775;
     }
 
-    .two p {
+    .button-for-demo-and-anaylsis a {
         font-size: 2.25rem;
     }
 
@@ -161,7 +153,7 @@ a {
         font-weight: 800;
     }
 
-    .two p {
+    .button-for-demo-and-anaylsis a {
         font-size: 2.5rem;
     }
 
@@ -178,7 +170,7 @@ a {
         font-weight: 900;
     }
 
-    .two p {
+    .button-for-demo-and-anaylsis a {
         font-size: 2.75rem;
     }
 
