@@ -38,6 +38,7 @@ a {
     flex: 2 1 auto;
     max-height: 90%;
     height: 90%;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -70,6 +71,7 @@ a {
     flex-flow: row wrap;
     flex: 1 1 auto;
     max-width: 100;
+    margin: 0 auto;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -100,7 +102,24 @@ a {
 
 
 /* Extra small devices (phones, 600px and down) */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 400px) {
+    .two h1 {
+        font-size: 2.2rem;
+        font-weight: 600;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 20px;
+    }
+
+    .social-links-span i {
+        font-size: 1.25rem;
+        margin: 0.1rem 0.075rem;
+    }
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media screen and (min-width: 400px) {
     .two h1 {
         font-size: 2.5rem;
         font-weight: 650;
