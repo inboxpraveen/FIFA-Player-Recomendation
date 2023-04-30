@@ -1,0 +1,232 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    width: 100vw;
+    max-height: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    cursor: none;
+    opacity: 1;
+    overflow: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: white !important;
+}
+
+.main-container {
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+    text-align: center;
+    justify-content: center;
+}
+
+.two {
+    flex: 2 1 auto;
+    max-height: 90%;
+    height: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+}
+
+.two h1 {
+    margin: 0.5rem 1rem;
+    text-shadow: 4px 4px 4px rgba(19, 19, 19, 0.5);
+}
+
+.button-for-demo-and-anaylsis {
+    margin-top: 1rem auto;
+}
+
+.button-for-demo-and-anaylsis a {
+    margin: 0.25rem 0.5rem;
+    background: #247c88;
+    padding: 0.5rem 1rem;
+    text-shadow: 4px 4px 4px rgba(7, 7, 7, 0.5);
+    border-radius: 2%;
+}
+
+.button-for-demo-and-anaylsis a:hover {
+    background: #2c6d75;
+}
+
+.three {
+    display: flex;
+    flex-flow: row wrap;
+    flex: 1 1 auto;
+    max-width: 100;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-height: 10%;
+}
+
+.social-links-span {
+    border-radius: 1rem;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+}
+
+.social-links-span i {
+    margin: 0rem 0.75rem;
+    padding: 0.5rem;
+}
+
+.social-links-span i:hover {
+    background-color: #247c88;
+    border-radius: 50%;
+    transition: all 0.5s ease;
+}
+
+.add-text-background {
+    color: #247c88;
+}
+
+
+/* Extra small devices (phones, 600px and down) */
+@media screen and (max-width: 400px) {
+    .two h1 {
+        font-size: 2.2rem;
+        font-weight: 600;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 20px;
+    }
+
+    .social-links-span i {
+        font-size: 1.25rem;
+        margin: 0.1rem 0.075rem;
+    }
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media screen and (min-width: 400px) {
+    .two h1 {
+        font-size: 2.5rem;
+        font-weight: 650;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 24px;
+    }
+
+    .social-links-span i {
+        font-size: 1.75rem;
+        margin: 0.1rem 0.125rem;
+    }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media screen and (min-width: 600px) {
+    .two h1 {
+        font-size: 2.75rem;
+        font-weight: 650;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 28px;
+    }
+
+    .social-links-span i {
+        font-size: 1.95rem;
+        margin: 0.1rem 0.25rem;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media screen and (min-width: 768px) {
+    .two h1 {
+        font-size: 3rem;
+        font-weight: 700;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 2rem;
+    }
+
+    .social-links-span i {
+        font-size: 2rem;
+        margin: 0.1rem 0.35rem;
+    }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media screen and (min-width: 992px) {
+    .two h1 {
+        font-size: 3.1rem;
+        font-weight: 725;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 2.1rem;
+    }
+
+    .social-links-span i {
+        font-size: 2.1rem;
+        margin: 0.1rem 0.45rem;
+    }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media screen and (min-width: 1200px) {
+    .two h1 {
+        font-size: 3.5rem;
+        font-weight: 725;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 2.5rem;
+    }
+
+    .social-links-span i {
+        font-size: 2.5rem;
+        margin: 0.1rem 0.5rem;
+    }
+}
+
+/* Extra large devices (ultra wide desktops, 1800px and up) */
+@media screen and (min-width: 1800px) {
+    .two h1 {
+        font-size: 4rem;
+        font-weight: 750;
+    }
+
+    .button-for-demo-and-anaylsis a {
+        font-size: 3rem;
+    }
+
+    .social-links-span i {
+        font-size: 3rem;
+        margin: 0.1rem 0.75rem;
+    }
+}
+
+#myVideo {
+    position: fixed;
+    right: 0;
+    opacity: 0.5;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -100;
+    transform: translateX(calc((100% - 100vw) / 2));
+}
