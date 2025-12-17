@@ -374,8 +374,7 @@ body::after {
     color: rgba(255, 255, 255, 0.9);
 }
 
-.form-group input,
-.form-group select {
+.form-group input {
     padding: 0.875rem 1.25rem;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
@@ -383,37 +382,117 @@ body::after {
     color: #fff;
     font-size: 1rem;
     transition: var(--transition);
+    font-weight: 400;
+}
+
+.form-group select {
+    padding: 0.875rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    transition: var(--transition);
+    font-weight: 400;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
 }
 
 .form-group input::placeholder {
     color: rgba(255, 255, 255, 0.6);
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.form-group input:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.25);
     border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Select dropdown options */
-.form-group select {
-    background: rgba(255, 255, 255, 0.25);
+.form-group select:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.form-group select:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Universal select dropdown styling - light background matching inputs */
+select {
+    padding: 0.875rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    transition: var(--transition);
     cursor: pointer;
+    font-weight: 400;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
 }
 
-.form-group select option {
-    background: rgba(20, 20, 35, 0.98);
-    color: #fff;
-    padding: 0.75rem;
-    font-weight: 500;
+select:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
-/* Ensure dropdown options are visible in all sections */
+select:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Dropdown options - solid dark background with white text for clear visibility */
 select option {
-    background: rgba(20, 20, 35, 0.98);
+    background-color: #1a1a2e;
     color: #fff;
-    padding: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-weight: 400;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+    background-color: #3d3d6b;
+    color: #fff;
+}
+
+/* Specific styling for form group selects */
+.form-group select {
+    width: 100%;
+}
+
+/* Number input styling */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Ensure number inputs have same styling as text inputs */
+.form-group input[type="number"] {
+    padding: 0.875rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
 }
 
 .checkbox-label {
@@ -892,6 +971,30 @@ select option {
     margin-bottom: 0.5rem;
 }
 
+/* Fix z-index stacking for compare form - higher fields need higher z-index */
+.compare-form .form-group:nth-child(1) {
+    z-index: 40;
+}
+.compare-form .form-group:nth-child(2) {
+    z-index: 30;
+}
+.compare-form .form-group:nth-child(3) {
+    z-index: 20;
+}
+.compare-form .form-group:nth-child(4) {
+    z-index: 10;
+}
+
+/* Fix z-index for search form - autocomplete should appear above other fields */
+.search-form .form-row:first-child {
+    position: relative;
+    z-index: 20;
+}
+.search-form .form-row:nth-child(2) {
+    position: relative;
+    z-index: 10;
+}
+
 .autocomplete-suggestions {
     display: none;
     position: absolute;
@@ -900,13 +1003,12 @@ select option {
     right: 0;
     max-height: 300px;
     overflow-y: auto;
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
     margin-top: 0.5rem;
     z-index: 1000;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
 }
 
 .autocomplete-suggestions.show {
@@ -917,9 +1019,10 @@ select option {
     padding: 0.875rem 1.25rem;
     cursor: pointer;
     transition: var(--transition);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     color: #fff;
     font-weight: 500;
+    background: #1a1a2e;
 }
 
 .autocomplete-suggestion:last-child {
@@ -927,11 +1030,13 @@ select option {
 }
 
 .autocomplete-suggestion:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: #3d3d6b;
+    color: #fff;
 }
 
 .autocomplete-suggestion.active {
-    background: rgba(255, 255, 255, 0.25);
+    background: #3d3d6b;
+    color: #fff;
 }
 
 /* Make player cards clickable */
