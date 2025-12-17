@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA Player Recommendation System | FC 25</title>
+    <meta name="description" content="Advanced FIFA Player Recommendation System with AI-powered suggestions and player comparisons">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for radar charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Background Gradient -->
+    <div class="bg-gradient"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-futbol"></i>
+                <span>FIFA Recommender</span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#home" class="nav-link active" data-section="home">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#search" class="nav-link" data-section="search">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </a>
+                <a href="#recommend" class="nav-link" data-section="recommend">
+                    <i class="fas fa-star"></i>
+                    <span>Recommend</span>
+                </a>
+                <a href="#compare" class="nav-link" data-section="compare">
+                    <i class="fas fa-balance-scale"></i>
+                    <span>Compare</span>
+                </a>
+            </div>
+            
+            <!-- Gender Toggle -->
+            <div class="gender-toggle">
+                <button class="gender-btn active" data-gender="male">
+                    <i class="fas fa-mars"></i>
+                    <span>Male</span>
+                </button>
+                <button class="gender-btn" data-gender="female">
+                    <i class="fas fa-venus"></i>
+                    <span>Female</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero-section">
+                <h1 class="hero-title">FIFA Player Recommendation System</h1>
+                <p class="hero-subtitle">Discover, Compare, and Find Similar Players with AI-Powered Recommendations</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card glass">
+                        <i class="fas fa-users stat-icon"></i>
+                        <div class="stat-value" id="total-male-players">-</div>
+                        <div class="stat-label">Male Players</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <i class="fas fa-users stat-icon"></i>
+                        <div class="stat-value" id="total-female-players">-</div>
+                        <div class="stat-label">Female Players</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <i class="fas fa-trophy stat-icon"></i>
+                        <div class="stat-value" id="top-male-player">-</div>
+                        <div class="stat-label">Top Male Player</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <i class="fas fa-trophy stat-icon"></i>
+                        <div class="stat-value" id="top-female-player">-</div>
+                        <div class="stat-label">Top Female Player</div>
+                    </div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card glass">
+                        <i class="fas fa-search feature-icon"></i>
+                        <h3>Advanced Search</h3>
+                        <p>Filter players by position, rating, nation, league, and more</p>
+                    </div>
+                    <div class="feature-card glass">
+                        <i class="fas fa-robot feature-icon"></i>
+                        <h3>AI Recommendations</h3>
+                        <p>Get similar player suggestions based on playing style and attributes</p>
+                    </div>
+                    <div class="feature-card glass">
+                        <i class="fas fa-chart-radar feature-icon"></i>
+                        <h3>Player Comparison</h3>
+                        <p>Compare up to 4 players side-by-side with interactive radar charts</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Search Section -->
+        <section id="search" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-search"></i> Search Players</h2>
+                <p>Find players using advanced filters</p>
+            </div>
+            
+            <div class="search-container glass">
+                <div class="search-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i> Player Name</label>
+                            <input type="text" id="search-query" placeholder="Search by name...">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-marker"></i> Position</label>
+                            <select id="search-position">
+                                <option value="">All Positions</option>
+                                <option value="GK">Goalkeeper (GK)</option>
+                                <option value="CB">Center Back (CB)</option>
+                                <option value="LB">Left Back (LB)</option>
+                                <option value="RB">Right Back (RB)</option>
+                                <option value="CDM">Defensive Midfielder (CDM)</option>
+                                <option value="CM">Central Midfielder (CM)</option>
+                                <option value="CAM">Attacking Midfielder (CAM)</option>
+                                <option value="LM">Left Midfielder (LM)</option>
+                                <option value="RM">Right Midfielder (RM)</option>
+                                <option value="LW">Left Wing (LW)</option>
+                                <option value="RW">Right Wing (RW)</option>
+                                <option value="ST">Striker (ST)</option>
+                                <option value="CF">Center Forward (CF)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-star"></i> Min Overall</label>
+                            <input type="number" id="search-min-overall" min="40" max="99" placeholder="e.g., 80">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-star"></i> Max Overall</label>
+                            <input type="number" id="search-max-overall" min="40" max="99" placeholder="e.g., 90">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-flag"></i> Nation</label>
+                            <input type="text" id="search-nation" placeholder="e.g., Brazil">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="searchPlayers()">
+                        <i class="fas fa-search"></i>
+                        Search Players
+                    </button>
+                </div>
+            </div>
+            
+            <div id="search-results" class="results-container"></div>
+        </section>
+        
+        <!-- Recommend Section -->
+        <section id="recommend" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> Get Recommendations</h2>
+                <p>Find similar players based on playing style</p>
+            </div>
+            
+            <div class="recommend-container glass">
+                <div class="recommend-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Player Name</label>
+                        <input type="text" id="recommend-player" placeholder="Enter player name...">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-list-ol"></i> Number of Recommendations</label>
+                            <input type="number" id="recommend-count" value="10" min="5" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="recommend-same-position" checked>
+                                <span>Same position only</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="getRecommendations()">
+                        <i class="fas fa-magic"></i>
+                        Get Recommendations
+                    </button>
+                </div>
+            </div>
+            
+            <div id="recommend-results" class="results-container"></div>
+        </section>
+        
+        <!-- Compare Section -->
+        <section id="compare" class="section">
+            <div class="section-header">
+                <h2><i class="fas fa-balance-scale"></i> Compare Players</h2>
+                <p>Compare up to 4 players side-by-side</p>
+            </div>
+            
+            <div class="compare-container glass">
+                <div class="compare-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> Player 1</label>
+                        <input type="text" id="compare-player-1" placeholder="Enter first player name...">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> Player 2</label>
+                        <input type="text" id="compare-player-2" placeholder="Enter second player name...">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> Player 3 (Optional)</label>
+                        <input type="text" id="compare-player-3" placeholder="Enter third player name...">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-users"></i> Player 4 (Optional)</label>
+                        <input type="text" id="compare-player-4" placeholder="Enter fourth player name...">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="comparePlayers()">
+                        <i class="fas fa-chart-radar"></i>
+                        Compare Players
+                    </button>
+                </div>
+            </div>
+            
+            <div id="compare-results" class="results-container"></div>
+        </section>
+        
+    </main>
+    
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
+
