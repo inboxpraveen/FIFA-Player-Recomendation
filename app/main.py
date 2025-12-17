@@ -175,7 +175,13 @@ def recommend_similar():
                 'age': int(source_player.get('Age', 0)),
                 'nation': source_player.get('Nation', 'Unknown'),
                 'league': source_player.get('League', 'Unknown'),
-                'team': source_player.get('Team', 'Free Agent')
+                'team': source_player.get('Team', 'Free Agent'),
+                'pace': int(source_player.get('PAC', 0)),
+                'shooting': int(source_player.get('SHO', 0)),
+                'passing': int(source_player.get('PAS', 0)),
+                'dribbling': int(source_player.get('DRI', 0)),
+                'defending': int(source_player.get('DEF', 0)),
+                'physical': int(source_player.get('PHY', 0))
             },
             'recommendations': formatted_recommendations
         })
@@ -318,6 +324,40 @@ def get_stats():
             'success': True,
             'male': male_stats,
             'female': female_stats
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/autocomplete', methods=['GET'])
+def autocomplete_players():
+    """Get player name suggestions for autocomplete"""
+    try:
+        gender = request.args.get('gender', 'male')
+        query = request.args.get('query', '').strip().lower()
+        limit = int(request.args.get('limit', 10))
+        
+        if not query or len(query) < 2:
+            return jsonify({'success': True, 'suggestions': []})
+        
+        # Select model
+        model = male_model if gender == 'male' else female_model
+        
+        if model is None:
+            return jsonify({'error': 'Model not loaded'}), 500
+        
+        # Filter players whose names contain the query
+        suggestions = []
+        for name in model.data['Name']:
+            if query in name.lower():
+                suggestions.append(name)
+                if len(suggestions) >= limit:
+                    break
+        
+        return jsonify({
+            'success': True,
+            'suggestions': suggestions
         })
     
     except Exception as e:

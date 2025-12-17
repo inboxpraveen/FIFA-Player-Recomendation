@@ -127,10 +127,11 @@
             <div class="search-container glass">
                 <div class="search-form">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label><i class="fas fa-user"></i> Player Name</label>
-                            <input type="text" id="search-query" placeholder="Search by name...">
-                        </div>
+                    <div class="form-group autocomplete-container">
+                        <label><i class="fas fa-user"></i> Player Name</label>
+                        <input type="text" id="search-query" placeholder="Search by name..." autocomplete="off">
+                        <div id="search-query-suggestions" class="autocomplete-suggestions"></div>
+                    </div>
                         <div class="form-group">
                             <label><i class="fas fa-map-marker"></i> Position</label>
                             <select id="search-position">
@@ -186,9 +187,10 @@
             
             <div class="recommend-container glass">
                 <div class="recommend-form">
-                    <div class="form-group">
+                    <div class="form-group autocomplete-container">
                         <label><i class="fas fa-user"></i> Player Name</label>
-                        <input type="text" id="recommend-player" placeholder="Enter player name...">
+                        <input type="text" id="recommend-player" placeholder="Enter player name..." autocomplete="off">
+                        <div id="recommend-player-suggestions" class="autocomplete-suggestions"></div>
                     </div>
                     
                     <div class="form-row">
@@ -223,21 +225,25 @@
             
             <div class="compare-container glass">
                 <div class="compare-form">
-                    <div class="form-group">
+                    <div class="form-group autocomplete-container">
                         <label><i class="fas fa-users"></i> Player 1</label>
-                        <input type="text" id="compare-player-1" placeholder="Enter first player name...">
+                        <input type="text" id="compare-player-1" placeholder="Enter first player name..." autocomplete="off">
+                        <div id="compare-player-1-suggestions" class="autocomplete-suggestions"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group autocomplete-container">
                         <label><i class="fas fa-users"></i> Player 2</label>
-                        <input type="text" id="compare-player-2" placeholder="Enter second player name...">
+                        <input type="text" id="compare-player-2" placeholder="Enter second player name..." autocomplete="off">
+                        <div id="compare-player-2-suggestions" class="autocomplete-suggestions"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group autocomplete-container">
                         <label><i class="fas fa-users"></i> Player 3 (Optional)</label>
-                        <input type="text" id="compare-player-3" placeholder="Enter third player name...">
+                        <input type="text" id="compare-player-3" placeholder="Enter third player name..." autocomplete="off">
+                        <div id="compare-player-3-suggestions" class="autocomplete-suggestions"></div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group autocomplete-container">
                         <label><i class="fas fa-users"></i> Player 4 (Optional)</label>
-                        <input type="text" id="compare-player-4" placeholder="Enter fourth player name...">
+                        <input type="text" id="compare-player-4" placeholder="Enter fourth player name..." autocomplete="off">
+                        <div id="compare-player-4-suggestions" class="autocomplete-suggestions"></div>
                     </div>
                     
                     <button class="btn btn-primary" onclick="comparePlayers()">
@@ -260,6 +266,14 @@
     
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
+    
+    <!-- Player Detail Modal -->
+    <div id="player-modal" class="modal">
+        <div class="modal-content glass">
+            <span class="modal-close" onclick="closePlayerModal()">&times;</span>
+            <div id="modal-player-content"></div>
+        </div>
+    </div>
     
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>

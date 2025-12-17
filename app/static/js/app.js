@@ -8,6 +8,7 @@ let currentSection = 'home';
 document.addEventListener('DOMContentLoaded', () => {
     initializeNavigation();
     initializeGenderToggle();
+    initializeAutocomplete();
     loadStats();
 });
 
@@ -331,7 +332,7 @@ function createComparisonCard(data, index) {
 // Create player card HTML
 function createPlayerCard(player, showSimilarity = false) {
     return `
-        <div class="player-card glass">
+        <div class="player-card glass" onclick="openPlayerDetails('${player.name.replace(/'/g, "\\'")}')">
             ${showSimilarity && player.similarity ? `
                 <div class="similarity-badge">${player.similarity}% Match</div>
             ` : ''}
@@ -464,7 +465,196 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 
-// Allow Enter key to trigger searches
+// Player detail modal
+async function openPlayerDetails(playerName) {
+    showLoading(true);
+    
+    try {
+        const response = await fetch(`/api/player/${encodeURIComponent(playerName)}?gender=${currentGender}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayPlayerModal(data.player, data.radar);
+        } else {
+            showToast('Player details not found', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading player details:', error);
+        showToast('Failed to load player details', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function displayPlayerModal(player, radar) {
+    const modal = document.getElementById('player-modal');
+    const content = document.getElementById('modal-player-content');
+    
+    content.innerHTML = `
+        <div class="modal-player-header">
+            <div class="modal-player-name">${player.name}</div>
+            <div class="modal-player-info">
+                <span style="color: ${getOverallColor(player.overall)}; font-size: 1.5rem; font-weight: 700;">OVR ${player.overall}</span>
+                <span>${player.position}</span>
+                <span>${player.age} years</span>
+                <span><i class="fas fa-flag"></i> ${player.nation}</span>
+            </div>
+            <div class="modal-player-info" style="margin-top: 0.5rem;">
+                <span><i class="fas fa-trophy"></i> ${player.league}</span>
+                <span><i class="fas fa-shield-alt"></i> ${player.team}</span>
+            </div>
+            <div class="modal-player-info" style="margin-top: 0.5rem;">
+                <span><i class="fas fa-ruler"></i> ${player.height}</span>
+                <span><i class="fas fa-weight"></i> ${player.weight}</span>
+                <span><i class="fas fa-shoe-prints"></i> ${player.preferred_foot} foot</span>
+                <span><i class="fas fa-star"></i> ${player.weak_foot}★ WF</span>
+                <span><i class="fas fa-magic"></i> ${player.skill_moves}★ SM</span>
+            </div>
+        </div>
+        
+        <div class="modal-radar-container">
+            <canvas id="modal-radar-chart"></canvas>
+        </div>
+        
+        <div class="modal-player-stats">
+            <div class="modal-stat-card">
+                <div class="modal-stat-value" style="color: ${getStatColor(player.pace)}">${player.pace}</div>
+                <div class="modal-stat-label">Pace</div>
+            </div>
+            <div class="modal-stat-card">
+                <div class="modal-stat-value" style="color: ${getStatColor(player.shooting)}">${player.shooting}</div>
+                <div class="modal-stat-label">Shooting</div>
+            </div>
+            <div class="modal-stat-card">
+                <div class="modal-stat-value" style="color: ${getStatColor(player.passing)}">${player.passing}</div>
+                <div class="modal-stat-label">Passing</div>
+            </div>
+            <div class="modal-stat-card">
+                <div class="modal-stat-value" style="color: ${getStatColor(player.dribbling)}">${player.dribbling}</div>
+                <div class="modal-stat-label">Dribbling</div>
+            </div>
+            <div class="modal-stat-card">
+                <div class="modal-stat-value" style="color: ${getStatColor(player.defending)}">${player.defending}</div>
+                <div class="modal-stat-label">Defending</div>
+            </div>
+            <div class="modal-stat-card">
+                <div class="modal-stat-value" style="color: ${getStatColor(player.physical)}">${player.physical}</div>
+                <div class="modal-stat-label">Physical</div>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('show');
+    
+    // Render radar chart
+    setTimeout(() => {
+        renderRadarChart('modal-radar-chart', radar);
+    }, 100);
+}
+
+function closePlayerModal() {
+    const modal = document.getElementById('player-modal');
+    modal.classList.remove('show');
+}
+
+function getStatColor(value) {
+    if (value >= 80) return '#10b981';
+    if (value >= 70) return '#3b82f6';
+    if (value >= 60) return '#f59e0b';
+    return '#ef4444';
+}
+
+// Close modal on outside click
+document.addEventListener('click', (e) => {
+    const modal = document.getElementById('player-modal');
+    if (e.target === modal) {
+        closePlayerModal();
+    }
+});
+
+// Autocomplete functionality
+function initializeAutocomplete() {
+    const inputs = [
+        'search-query',
+        'recommend-player',
+        'compare-player-1',
+        'compare-player-2',
+        'compare-player-3',
+        'compare-player-4'
+    ];
+    
+    inputs.forEach(inputId => {
+        const input = document.getElementById(inputId);
+        if (input) {
+            setupAutocomplete(input, inputId + '-suggestions');
+        }
+    });
+}
+
+function setupAutocomplete(input, suggestionsId) {
+    let debounceTimer;
+    
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+        
+        if (query.length < 2) {
+            hideSuggestions(suggestionsId);
+            return;
+        }
+        
+        debounceTimer = setTimeout(() => {
+            fetchSuggestions(query, suggestionsId, input);
+        }, 300);
+    });
+    
+    input.addEventListener('blur', function() {
+        setTimeout(() => hideSuggestions(suggestionsId), 200);
+    });
+}
+
+async function fetchSuggestions(query, suggestionsId, inputElement) {
+    try {
+        const response = await fetch(`/api/autocomplete?gender=${currentGender}&query=${encodeURIComponent(query)}&limit=10`);
+        const data = await response.json();
+        
+        if (data.success && data.suggestions.length > 0) {
+            displaySuggestions(data.suggestions, suggestionsId, inputElement);
+        } else {
+            hideSuggestions(suggestionsId);
+        }
+    } catch (error) {
+        console.error('Autocomplete error:', error);
+    }
+}
+
+function displaySuggestions(suggestions, suggestionsId, inputElement) {
+    const container = document.getElementById(suggestionsId);
+    if (!container) return;
+    
+    container.innerHTML = suggestions.map(name => `
+        <div class="autocomplete-suggestion" onclick="selectSuggestion('${name.replace(/'/g, "\\'")}', '${inputElement.id}', '${suggestionsId}')">${name}</div>
+    `).join('');
+    
+    container.classList.add('show');
+}
+
+function hideSuggestions(suggestionsId) {
+    const container = document.getElementById(suggestionsId);
+    if (container) {
+        container.classList.remove('show');
+    }
+}
+
+function selectSuggestion(name, inputId, suggestionsId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = name;
+    }
+    hideSuggestions(suggestionsId);
+}
+
+// Keyboard shortcuts
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         if (currentSection === 'search') {
@@ -474,6 +664,12 @@ document.addEventListener('keypress', (e) => {
         } else if (currentSection === 'compare') {
             comparePlayers();
         }
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closePlayerModal();
     }
 });
 
