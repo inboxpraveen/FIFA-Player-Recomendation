@@ -6,7 +6,7 @@
 
 A modern, AI-powered FIFA player recommendation system built with Flask and scikit-learn. Features separate models for male and female players with advanced search, similarity-based recommendations, and interactive player comparisons.
 
-![FIFA Player Recommendation System](assets/home/images/tile.png)
+![FIFA Player Recommendation System](assets/output.gif)
 
 ## ✨ Features
 
