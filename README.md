@@ -6,7 +6,21 @@
 
 A modern, AI-powered FIFA player recommendation system built with Flask and scikit-learn. Features separate models for male and female players with advanced search, similarity-based recommendations, and interactive player comparisons.
 
-![FIFA Player Recommendation System](assets/output.gif)
+<p align="center">
+  <img src="assets/Home-Page.png" alt="FIFA Player Recommendation — home (light theme)" width="45%" />
+  &nbsp;
+  <img src="assets/Home-Page-DarkTheme.png" alt="FIFA Player Recommendation — home (dark theme)" width="45%" />
+</p>
+
+<p align="center">
+  <img src="assets/Player-Search.png" alt="Player search" width="30%" />
+  <img src="assets/Player-Recommendations.png" alt="Player recommendations" width="30%" />
+  <img src="assets/Compare-Players.png" alt="Compare players" width="30%" />
+</p>
+
+<p align="center">
+  <img src="assets/Player-Profile-View.png" alt="Player profile view" width="60%" />
+</p>
 
 ## ✨ Features
 
@@ -14,7 +28,7 @@ A modern, AI-powered FIFA player recommendation system built with Flask and scik
 - 👥 **Dual Gender Support** - Separate optimized models for male and female players (FC 25 dataset)
 - 🔍 **Advanced Search** - Filter by position, rating, nation, league, team, and more
 - 📊 **Player Comparison** - Compare up to 4 players side-by-side with interactive radar charts
-- 🎨 **Modern Glassmorphism UI** - Beautiful, minimalistic design with light theme
+- 🎨 **Modern Glassmorphism UI** - Beautiful, minimalistic design with light and dark themes
 - ⚡ **Fast & Efficient** - Optimized for datasets up to 20K players with precomputed similarity matrices
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 
@@ -172,7 +186,7 @@ The project uses FC 25 (FIFA 25) player data:
 ## 🎨 Design Philosophy
 
 - **Glassmorphism**: Modern, translucent UI elements with backdrop blur
-- **Light Theme**: Clean, professional appearance
+- **Themes**: Light and dark appearance options
 - **Minimalist**: Focus on content, reduce visual noise
 - **Responsive**: Mobile-first design approach
 - **Accessible**: High contrast, readable fonts, clear navigation

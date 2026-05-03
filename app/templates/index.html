@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +9,24 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Chart.js for radar charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Prevent FOUC: apply saved theme immediately -->
+    <script>
+        (function() {
+            var t = localStorage.getItem('fifa-theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
 </head>
 <body>
     <!-- Background Gradient -->
@@ -51,15 +59,22 @@
                 </a>
             </div>
             
-            <!-- Gender Toggle -->
-            <div class="gender-toggle">
-                <button class="gender-btn active" data-gender="male">
-                    <i class="fas fa-mars"></i>
-                    <span>Male</span>
-                </button>
-                <button class="gender-btn" data-gender="female">
-                    <i class="fas fa-venus"></i>
-                    <span>Female</span>
+            <div class="nav-right">
+                <!-- Gender Toggle -->
+                <div class="gender-toggle">
+                    <button class="gender-btn active" data-gender="male">
+                        <i class="fas fa-mars"></i>
+                        <span>Male</span>
+                    </button>
+                    <button class="gender-btn" data-gender="female">
+                        <i class="fas fa-venus"></i>
+                        <span>Female</span>
+                    </button>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
                 </button>
             </div>
         </div>
@@ -279,4 +294,3 @@
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
-

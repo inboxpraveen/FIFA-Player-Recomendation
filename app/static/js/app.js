@@ -1,101 +1,135 @@
 // FIFA Player Recommendation System - JavaScript Application
 
-// Global state
+// ── Global State ─────────────────────────────────────────────────────
 let currentGender = 'male';
 let currentSection = 'home';
 
-// Initialize app
+// ── Initialise ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    initializeThemeToggle();
     initializeNavigation();
     initializeGenderToggle();
     initializeAutocomplete();
     loadStats();
 });
 
-// Navigation
+// ── Theme Toggle ─────────────────────────────────────────────────────
+function initializeThemeToggle() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+
+    const saved = localStorage.getItem('fifa-theme') || 'dark';
+    applyTheme(saved);
+
+    btn.addEventListener('click', () => {
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        localStorage.setItem('fifa-theme', next);
+    });
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    const icon = document.querySelector('#theme-toggle i');
+    if (icon) {
+        icon.className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+}
+
+function getCurrentThemeColors() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    return {
+        tickColor:  isDark ? 'rgba(255,255,255,.5)' : 'rgba(0,0,0,.35)',
+        gridColor:  isDark ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)',
+        labelColor: isDark ? 'rgba(255,255,255,.75)' : 'rgba(30,41,59,.8)',
+    };
+}
+
+// ── Navigation ───────────────────────────────────────────────────────
 function initializeNavigation() {
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            
-            // Update active link
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
-            
-            // Show section
-            const sectionName = link.dataset.section;
-            showSection(sectionName);
+            showSection(link.dataset.section);
         });
     });
 }
 
 function showSection(sectionName) {
     const sections = document.querySelectorAll('.section');
-    sections.forEach(section => {
-        section.classList.remove('active');
-    });
-    
-    const targetSection = document.getElementById(sectionName);
-    if (targetSection) {
-        targetSection.classList.add('active');
+    sections.forEach(s => s.classList.remove('active'));
+
+    const target = document.getElementById(sectionName);
+    if (target) {
+        target.classList.add('active');
         currentSection = sectionName;
     }
 }
 
-// Gender toggle
+// ── Gender Toggle ────────────────────────────────────────────────────
 function initializeGenderToggle() {
     const genderBtns = document.querySelectorAll('.gender-btn');
-    
+
     genderBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             genderBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentGender = btn.dataset.gender;
-            
             showToast(`Switched to ${currentGender} players`, 'success');
         });
     });
 }
 
-// Load statistics
+// ── Load Statistics ──────────────────────────────────────────────────
 async function loadStats() {
     try {
         const response = await fetch('/api/stats');
         const data = await response.json();
-        
+
         if (data.success) {
-            document.getElementById('total-male-players').textContent = 
-                data.male.total_players.toLocaleString();
-            document.getElementById('total-female-players').textContent = 
-                data.female.total_players.toLocaleString();
-            document.getElementById('top-male-player').textContent = 
-                data.male.top_rated;
-            document.getElementById('top-female-player').textContent = 
-                data.female.top_rated;
+            animateCounter('total-male-players',  data.male.total_players);
+            animateCounter('total-female-players', data.female.total_players);
+            document.getElementById('top-male-player').textContent   = data.male.top_rated;
+            document.getElementById('top-female-player').textContent = data.female.top_rated;
         }
     } catch (error) {
         console.error('Error loading stats:', error);
     }
 }
 
-// Search players
+function animateCounter(elementId, target) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const duration = 1200;
+    const start = performance.now();
+
+    function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(ease * target).toLocaleString();
+        if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
+// ── Search Players ───────────────────────────────────────────────────
 async function searchPlayers() {
-    const query = document.getElementById('search-query').value.trim();
-    const position = document.getElementById('search-position').value;
+    const query      = document.getElementById('search-query').value.trim();
+    const position   = document.getElementById('search-position').value;
     const minOverall = document.getElementById('search-min-overall').value;
     const maxOverall = document.getElementById('search-max-overall').value;
-    const nation = document.getElementById('search-nation').value.trim();
-    
+    const nation     = document.getElementById('search-nation').value.trim();
+
     showLoading(true);
-    
+
     try {
         const response = await fetch('/api/search', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 gender: currentGender,
                 query: query || undefined,
@@ -106,9 +140,9 @@ async function searchPlayers() {
                 limit: 50
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             displaySearchResults(data.players);
             showToast(`Found ${data.count} player(s)`, 'success');
@@ -125,7 +159,7 @@ async function searchPlayers() {
 
 function displaySearchResults(players) {
     const container = document.getElementById('search-results');
-    
+
     if (!players || players.length === 0) {
         container.innerHTML = `
             <div class="no-results">
@@ -136,7 +170,7 @@ function displaySearchResults(players) {
         `;
         return;
     }
-    
+
     container.innerHTML = `
         <div class="results-header">
             <h3>Search Results</h3>
@@ -148,25 +182,23 @@ function displaySearchResults(players) {
     `;
 }
 
-// Get recommendations
+// ── Get Recommendations ──────────────────────────────────────────────
 async function getRecommendations() {
-    const playerName = document.getElementById('recommend-player').value.trim();
-    const count = parseInt(document.getElementById('recommend-count').value) || 10;
+    const playerName   = document.getElementById('recommend-player').value.trim();
+    const count        = parseInt(document.getElementById('recommend-count').value) || 10;
     const samePosition = document.getElementById('recommend-same-position').checked;
-    
+
     if (!playerName) {
         showToast('Please enter a player name', 'warning');
         return;
     }
-    
+
     showLoading(true);
-    
+
     try {
         const response = await fetch('/api/recommend', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 gender: currentGender,
                 player_name: playerName,
@@ -174,9 +206,9 @@ async function getRecommendations() {
                 same_position: samePosition
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             displayRecommendations(data.source_player, data.recommendations);
             showToast(`Found ${data.recommendations.length} similar player(s)`, 'success');
@@ -200,7 +232,7 @@ async function getRecommendations() {
 
 function displayRecommendations(sourcePlayer, recommendations) {
     const container = document.getElementById('recommend-results');
-    
+
     container.innerHTML = `
         <div class="results-header">
             <h3>Players Similar to ${sourcePlayer.name}</h3>
@@ -216,36 +248,34 @@ function displayRecommendations(sourcePlayer, recommendations) {
     `;
 }
 
-// Compare players
+// ── Compare Players ──────────────────────────────────────────────────
 async function comparePlayers() {
     const player1 = document.getElementById('compare-player-1').value.trim();
     const player2 = document.getElementById('compare-player-2').value.trim();
     const player3 = document.getElementById('compare-player-3').value.trim();
     const player4 = document.getElementById('compare-player-4').value.trim();
-    
+
     const players = [player1, player2, player3, player4].filter(p => p);
-    
+
     if (players.length < 2) {
         showToast('Please enter at least 2 player names', 'warning');
         return;
     }
-    
+
     showLoading(true);
-    
+
     try {
         const response = await fetch('/api/compare', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 gender: currentGender,
                 players: players
             })
         });
-        
+
         const data = await response.json();
-        
+
         if (data.success) {
             displayComparison(data.players);
             showToast('Comparison loaded successfully', 'success');
@@ -262,7 +292,7 @@ async function comparePlayers() {
 
 function displayComparison(playersData) {
     const container = document.getElementById('compare-results');
-    
+
     container.innerHTML = `
         <div class="results-header">
             <h3>Player Comparison</h3>
@@ -272,8 +302,7 @@ function displayComparison(playersData) {
             ${playersData.map((data, index) => createComparisonCard(data, index)).join('')}
         </div>
     `;
-    
-    // Render radar charts
+
     playersData.forEach((data, index) => {
         renderRadarChart(`radar-${index}`, data.radar);
     });
@@ -281,7 +310,7 @@ function displayComparison(playersData) {
 
 function createComparisonCard(data, index) {
     const player = data.card;
-    
+
     return `
         <div class="comparison-card glass">
             <div class="player-card-header">
@@ -329,7 +358,7 @@ function createComparisonCard(data, index) {
     `;
 }
 
-// Create player card HTML
+// ── Create Player Card HTML ──────────────────────────────────────────
 function createPlayerCard(player, showSimilarity = false) {
     return `
         <div class="player-card glass" onclick="openPlayerDetails('${player.name.replace(/'/g, "\\'")}')">
@@ -379,15 +408,16 @@ function createPlayerCard(player, showSimilarity = false) {
     `;
 }
 
-// Render radar chart
+// ── Render Radar Chart ───────────────────────────────────────────────
 function renderRadarChart(canvasId, radarData) {
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
-    
+
     const attributes = radarData.attributes;
-    const labels = Object.keys(attributes);
-    const values = Object.values(attributes);
-    
+    const labels     = Object.keys(attributes);
+    const values     = Object.values(attributes);
+    const colors     = getCurrentThemeColors();
+
     new Chart(ctx, {
         type: 'radar',
         data: {
@@ -396,12 +426,13 @@ function renderRadarChart(canvasId, radarData) {
                 label: radarData.name,
                 data: values,
                 fill: true,
-                backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                borderColor: 'rgba(102, 126, 234, 1)',
-                pointBackgroundColor: 'rgba(102, 126, 234, 1)',
-                pointBorderColor: '#fff',
-                pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+                backgroundColor: 'rgba(99, 102, 241, .15)',
+                borderColor: 'rgba(99, 102, 241, .8)',
+                pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                pointBorderColor: 'transparent',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                borderWidth: 2
             }]
         },
         options: {
@@ -413,36 +444,36 @@ function renderRadarChart(canvasId, radarData) {
                     max: 100,
                     ticks: {
                         stepSize: 20,
-                        color: 'rgba(255, 255, 255, 0.7)'
+                        color: colors.tickColor,
+                        backdropColor: 'transparent',
+                        font: { size: 10 }
                     },
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: colors.gridColor
+                    },
+                    angleLines: {
+                        color: colors.gridColor
                     },
                     pointLabels: {
-                        color: 'rgba(255, 255, 255, 0.9)',
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        }
+                        color: colors.labelColor,
+                        font: { size: 11, weight: '600' }
                     }
                 }
             },
             plugins: {
-                legend: {
-                    display: false
-                }
+                legend: { display: false }
             }
         }
     });
 }
 
-// Utility functions
+// ── Utility Functions ────────────────────────────────────────────────
 function getOverallColor(overall) {
-    if (overall >= 90) return '#FFD700';
-    if (overall >= 85) return '#FF4500';
-    if (overall >= 80) return '#32CD32';
-    if (overall >= 75) return '#4169E1';
-    return '#808080';
+    if (overall >= 90) return '#eab308';
+    if (overall >= 85) return '#f97316';
+    if (overall >= 80) return '#22c55e';
+    if (overall >= 75) return '#6366f1';
+    return '#94a3b8';
 }
 
 function showLoading(show) {
@@ -459,20 +490,20 @@ function showToast(message, type = 'info') {
     toast.textContent = message;
     toast.className = `toast ${type}`;
     toast.classList.add('show');
-    
+
     setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
 }
 
-// Player detail modal
+// ── Player Detail Modal ──────────────────────────────────────────────
 async function openPlayerDetails(playerName) {
     showLoading(true);
-    
+
     try {
         const response = await fetch(`/api/player/${encodeURIComponent(playerName)}?gender=${currentGender}`);
         const data = await response.json();
-        
+
         if (data.success) {
             displayPlayerModal(data.player, data.radar);
         } else {
@@ -487,9 +518,9 @@ async function openPlayerDetails(playerName) {
 }
 
 function displayPlayerModal(player, radar) {
-    const modal = document.getElementById('player-modal');
+    const modal   = document.getElementById('player-modal');
     const content = document.getElementById('modal-player-content');
-    
+
     content.innerHTML = `
         <div class="modal-player-header">
             <div class="modal-player-name">${player.name}</div>
@@ -511,11 +542,11 @@ function displayPlayerModal(player, radar) {
                 <span><i class="fas fa-magic"></i> ${player.skill_moves}★ SM</span>
             </div>
         </div>
-        
+
         <div class="modal-radar-container">
             <canvas id="modal-radar-chart"></canvas>
         </div>
-        
+
         <div class="modal-player-stats">
             <div class="modal-stat-card">
                 <div class="modal-stat-value" style="color: ${getStatColor(player.pace)}">${player.pace}</div>
@@ -543,13 +574,12 @@ function displayPlayerModal(player, radar) {
             </div>
         </div>
     `;
-    
+
     modal.classList.add('show');
-    
-    // Render radar chart
+
     setTimeout(() => {
         renderRadarChart('modal-radar-chart', radar);
-    }, 100);
+    }, 120);
 }
 
 function closePlayerModal() {
@@ -559,12 +589,11 @@ function closePlayerModal() {
 
 function getStatColor(value) {
     if (value >= 80) return '#10b981';
-    if (value >= 70) return '#3b82f6';
+    if (value >= 70) return '#6366f1';
     if (value >= 60) return '#f59e0b';
     return '#ef4444';
 }
 
-// Close modal on outside click
 document.addEventListener('click', (e) => {
     const modal = document.getElementById('player-modal');
     if (e.target === modal) {
@@ -572,7 +601,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Autocomplete functionality
+// ── Autocomplete ─────────────────────────────────────────────────────
 function initializeAutocomplete() {
     const inputs = [
         'search-query',
@@ -582,7 +611,7 @@ function initializeAutocomplete() {
         'compare-player-3',
         'compare-player-4'
     ];
-    
+
     inputs.forEach(inputId => {
         const input = document.getElementById(inputId);
         if (input) {
@@ -593,22 +622,22 @@ function initializeAutocomplete() {
 
 function setupAutocomplete(input, suggestionsId) {
     let debounceTimer;
-    
-    input.addEventListener('input', function() {
+
+    input.addEventListener('input', function () {
         clearTimeout(debounceTimer);
         const query = this.value.trim();
-        
+
         if (query.length < 2) {
             hideSuggestions(suggestionsId);
             return;
         }
-        
+
         debounceTimer = setTimeout(() => {
             fetchSuggestions(query, suggestionsId, input);
         }, 300);
     });
-    
-    input.addEventListener('blur', function() {
+
+    input.addEventListener('blur', function () {
         setTimeout(() => hideSuggestions(suggestionsId), 200);
     });
 }
@@ -617,7 +646,7 @@ async function fetchSuggestions(query, suggestionsId, inputElement) {
     try {
         const response = await fetch(`/api/autocomplete?gender=${currentGender}&query=${encodeURIComponent(query)}&limit=10`);
         const data = await response.json();
-        
+
         if (data.success && data.suggestions.length > 0) {
             displaySuggestions(data.suggestions, suggestionsId, inputElement);
         } else {
@@ -631,11 +660,11 @@ async function fetchSuggestions(query, suggestionsId, inputElement) {
 function displaySuggestions(suggestions, suggestionsId, inputElement) {
     const container = document.getElementById(suggestionsId);
     if (!container) return;
-    
+
     container.innerHTML = suggestions.map(name => `
         <div class="autocomplete-suggestion" onclick="selectSuggestion('${name.replace(/'/g, "\\'")}', '${inputElement.id}', '${suggestionsId}')">${name}</div>
     `).join('');
-    
+
     container.classList.add('show');
 }
 
@@ -654,16 +683,12 @@ function selectSuggestion(name, inputId, suggestionsId) {
     hideSuggestions(suggestionsId);
 }
 
-// Keyboard shortcuts
+// ── Keyboard Shortcuts ───────────────────────────────────────────────
 document.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
-        if (currentSection === 'search') {
-            searchPlayers();
-        } else if (currentSection === 'recommend') {
-            getRecommendations();
-        } else if (currentSection === 'compare') {
-            comparePlayers();
-        }
+        if (currentSection === 'search')    searchPlayers();
+        else if (currentSection === 'recommend') getRecommendations();
+        else if (currentSection === 'compare')   comparePlayers();
     }
 });
 
@@ -672,4 +697,3 @@ document.addEventListener('keydown', (e) => {
         closePlayerModal();
     }
 });
-
