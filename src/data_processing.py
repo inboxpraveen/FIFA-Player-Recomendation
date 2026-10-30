@@ -91,19 +91,25 @@ class DataProcessor:
         features = df[self.FEATURE_COLUMNS].values
         return features
     
-    def normalize_features(self, features: np.ndarray) -> np.ndarray:
-        """Normalize features to 0-1 range for fair comparison"""
-        # Use min-max normalization
-        min_vals = features.min(axis=0)
-        max_vals = features.max(axis=0)
-        
+    def normalize_features(self, features: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """
+        Standardize each feature to zero mean and unit variance.
+
+        Centering matters for cosine similarity: on raw or min-max scaled
+        ratings every vector points the same way and all scores sit near 1.
+        Returns the scaled matrix plus the mean and std so new inputs can be
+        scaled the same way.
+        """
+        features = features.astype(np.float64)
+        mean = features.mean(axis=0)
+        std = features.std(axis=0)
+
         # Avoid division by zero
-        range_vals = max_vals - min_vals
-        range_vals[range_vals == 0] = 1
-        
-        normalized = (features - min_vals) / range_vals
-        
-        return normalized
+        std[std == 0] = 1
+
+        normalized = (features - mean) / std
+
+        return normalized, mean, std
     
     def get_position_category(self, position: str) -> str:
         """Categorize position into broader groups"""
@@ -136,13 +142,15 @@ class DataProcessor:
         
         # Extract and normalize features
         features = self.extract_features(df)
-        normalized_features = self.normalize_features(features)
-        
+        normalized_features, feature_mean, feature_std = self.normalize_features(features)
+
         return {
             'data': df,
             'features': features,
             'normalized_features': normalized_features,
-            'feature_names': self.FEATURE_COLUMNS
+            'feature_names': self.FEATURE_COLUMNS,
+            'feature_mean': feature_mean,
+            'feature_std': feature_std
         }
     
     def get_player_card_data(self, player_row: pd.Series) -> Dict:

@@ -8,13 +8,21 @@ import sys
 import os
 
 # Add parent directory to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, PROJECT_ROOT)
 
 from src.model import PlayerRecommender
 from src.data_processing import DataProcessor
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
+
+# Trained models live here unless MODELS_DIR points elsewhere
+MODELS_DIR = os.environ.get('MODELS_DIR', os.path.join(PROJECT_ROOT, 'models'))
+
+# Upper bounds for client-supplied sizes
+MAX_RESULTS = 100
+MAX_SUGGESTIONS = 20
 
 # Global models
 male_model = None
@@ -27,18 +35,43 @@ def load_models():
     global male_model, female_model
     
     try:
-        male_model = PlayerRecommender.load('models/male_model.pkl')
+        male_model = PlayerRecommender.load(os.path.join(MODELS_DIR, 'male_model.pkl'))
         print("Male model loaded successfully")
     except Exception as e:
         print(f"Error loading male model: {e}")
         male_model = None
     
     try:
-        female_model = PlayerRecommender.load('models/female_model.pkl')
+        female_model = PlayerRecommender.load(os.path.join(MODELS_DIR, 'female_model.pkl'))
         print("Female model loaded successfully")
     except Exception as e:
         print(f"Error loading female model: {e}")
         female_model = None
+
+
+def bounded_int(value, default, low, high):
+    """Parse a client-supplied integer and clamp it to [low, high]"""
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        value = default
+    return max(low, min(high, value))
+
+
+def optional_int(value):
+    """Parse an optional integer filter, ignoring blanks and bad input"""
+    if value is None or value == '':
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def server_error():
+    """Log the active exception and return a generic error to the client"""
+    app.logger.exception('Request failed')
+    return jsonify({'error': 'Internal server error'}), 500
 
 
 @app.route('/')
@@ -47,20 +80,28 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/api/health', methods=['GET'])
+def health():
+    """Report whether both models are loaded, for load balancers and containers"""
+    models = {'male': male_model is not None, 'female': female_model is not None}
+    healthy = all(models.values())
+    return jsonify({'status': 'ok' if healthy else 'degraded', 'models': models}), 200 if healthy else 503
+
+
 @app.route('/api/search', methods=['POST'])
 def search_players():
     """Search for players with filters"""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         gender = data.get('gender', 'male')
         query = data.get('query', '')
         position = data.get('position')
-        min_overall = data.get('min_overall')
-        max_overall = data.get('max_overall')
+        min_overall = optional_int(data.get('min_overall'))
+        max_overall = optional_int(data.get('max_overall'))
         nation = data.get('nation')
         league = data.get('league')
         team = data.get('team')
-        limit = data.get('limit', 50)
+        limit = bounded_int(data.get('limit'), 50, 1, MAX_RESULTS)
         
         # Select model
         model = male_model if gender == 'male' else female_model
@@ -105,20 +146,20 @@ def search_players():
             'count': len(formatted_results)
         })
     
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return server_error()
 
 
 @app.route('/api/recommend', methods=['POST'])
 def recommend_similar():
     """Get similar player recommendations"""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         gender = data.get('gender', 'male')
-        player_name = data.get('player_name', '')
-        n_recommendations = data.get('n_recommendations', 10)
-        same_position = data.get('same_position', True)
-        max_age_diff = data.get('max_age_diff')
+        player_name = str(data.get('player_name') or '').strip()
+        n_recommendations = bounded_int(data.get('n_recommendations'), 10, 1, MAX_RESULTS)
+        same_position = bool(data.get('same_position', True))
+        max_age_diff = optional_int(data.get('max_age_diff'))
         
         if not player_name:
             return jsonify({'error': 'Player name is required'}), 400
@@ -186,8 +227,8 @@ def recommend_similar():
             'recommendations': formatted_recommendations
         })
     
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return server_error()
 
 
 @app.route('/api/player/<player_name>', methods=['GET'])
@@ -218,17 +259,17 @@ def get_player_details(player_name):
             'radar': radar_data
         })
     
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return server_error()
 
 
 @app.route('/api/compare', methods=['POST'])
 def compare_players():
     """Compare two or more players"""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         gender = data.get('gender', 'male')
-        player_names = data.get('players', [])
+        player_names = [str(name) for name in data.get('players') or [] if str(name).strip()]
         
         if len(player_names) < 2:
             return jsonify({'error': 'At least 2 players required for comparison'}), 400
@@ -262,8 +303,8 @@ def compare_players():
             'players': players_data
         })
     
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return server_error()
 
 
 @app.route('/api/top-players', methods=['GET'])
@@ -271,7 +312,7 @@ def get_top_players():
     """Get top players by overall rating"""
     try:
         gender = request.args.get('gender', 'male')
-        n = int(request.args.get('n', 100))
+        n = bounded_int(request.args.get('n'), 100, 1, MAX_RESULTS)
         position = request.args.get('position')
         
         # Select model
@@ -300,8 +341,8 @@ def get_top_players():
             'players': formatted_players
         })
     
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return server_error()
 
 
 @app.route('/api/stats', methods=['GET'])
@@ -326,8 +367,8 @@ def get_stats():
             'female': female_stats
         })
     
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return server_error()
 
 
 @app.route('/api/autocomplete', methods=['GET'])
@@ -336,7 +377,7 @@ def autocomplete_players():
     try:
         gender = request.args.get('gender', 'male')
         query = request.args.get('query', '').strip().lower()
-        limit = int(request.args.get('limit', 10))
+        limit = bounded_int(request.args.get('limit'), 10, 1, MAX_SUGGESTIONS)
         
         if not query or len(query) < 2:
             return jsonify({'success': True, 'suggestions': []})
@@ -348,26 +389,26 @@ def autocomplete_players():
             return jsonify({'error': 'Model not loaded'}), 500
         
         # Filter players whose names contain the query
-        suggestions = []
-        for name in model.data['Name']:
-            if query in name.lower():
-                suggestions.append(name)
-                if len(suggestions) >= limit:
-                    break
+        matches = model.data['Name'].str.lower().str.contains(query, regex=False, na=False)
+        suggestions = model.data.loc[matches, 'Name'].head(limit).tolist()
         
         return jsonify({
             'success': True,
             'suggestions': suggestions
         })
     
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+    except Exception:
+        return server_error()
+
+
+# Load at import so any WSGI server (gunicorn, waitress) serves a ready app
+load_models()
 
 
 if __name__ == '__main__':
-    # Load models
-    load_models()
-    
-    # Run app
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(
+        debug=os.environ.get('FLASK_DEBUG') == '1',
+        host=os.environ.get('HOST', '127.0.0.1'),
+        port=int(os.environ.get('PORT', 5000))
+    )
 

@@ -1,0 +1,9 @@
+.git
+.github
+__pycache__
+*.pyc
+models/
+tests/
+assets/
+*.md
+.env

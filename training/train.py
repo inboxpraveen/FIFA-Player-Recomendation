@@ -50,11 +50,11 @@ def train_model(data_path, model_name, model_path):
     start_time = time.time()
     
     try:
-        print_step("📊", f"Processing {model_name} data...")
+        print_step(1, f"Processing {model_name} data...")
         
         # Check if data file exists
         if not os.path.exists(data_path):
-            print(f"❌ Error: Data file not found: {data_path}")
+            print(f"Error: Data file not found: {data_path}")
             return False, None, 0
         
         # Initialize processor
@@ -63,24 +63,26 @@ def train_model(data_path, model_name, model_path):
         # Process data
         processed = processor.process_for_training(data_path)
         
-        print(f"   ✓ Loaded {len(processed['data'])} players")
-        print(f"   ✓ Extracted {len(processed['feature_names'])} features")
-        print(f"   ✓ Feature matrix shape: {processed['normalized_features'].shape}")
+        print(f"   - Loaded {len(processed['data'])} players")
+        print(f"   - Extracted {len(processed['feature_names'])} features")
+        print(f"   - Feature matrix shape: {processed['normalized_features'].shape}")
         
         # Train model
-        print_step("🤖", f"Training {model_name} model...")
+        print_step(2, f"Training {model_name} model...")
         
         model = PlayerRecommender()
         model.fit(
             data=processed['data'],
             normalized_features=processed['normalized_features'],
-            feature_names=processed['feature_names']
+            feature_names=processed['feature_names'],
+            feature_mean=processed['feature_mean'],
+            feature_std=processed['feature_std']
         )
         
-        print(f"   ✓ Similarity matrix computed: {model.similarity_matrix.shape}")
+        print(f"   - Indexed {len(model.data)} players for on-demand cosine similarity")
         
         # Save model
-        print_step("💾", f"Saving {model_name} model...")
+        print_step(3, f"Saving {model_name} model...")
         
         # Create models directory if it doesn't exist
         os.makedirs(os.path.dirname(model_path), exist_ok=True)
@@ -90,65 +92,57 @@ def train_model(data_path, model_name, model_path):
         # Get file size
         file_size = os.path.getsize(model_path) / (1024 * 1024)  # MB
         
-        print(f"   ✓ Model saved: {model_path}")
-        print(f"   ✓ File size: {file_size:.1f} MB")
+        print(f"   - Model saved: {model_path}")
+        print(f"   - File size: {file_size:.1f} MB")
         
         # Test model
-        print_step("🧪", f"Testing {model_name} model...")
+        print_step(4, f"Testing {model_name} model...")
         
         # Get top player
         top_player = model.data.nlargest(1, 'OVR')['Name'].values[0]
-        print(f"   ✓ Top player: {top_player}")
+        print(f"   - Top player: {top_player}")
         
         # Test search
         search_results = model.search_players(limit=5)
-        print(f"   ✓ Search test: Found {len(search_results)} players")
+        print(f"   - Search test: Found {len(search_results)} players")
         
         # Test recommendations with top player
         try:
             recommendations = model.recommend_similar(top_player, n_recommendations=3)
-            print(f"   ✓ Recommendation test: {len(recommendations)} similar players found")
+            print(f"   - Recommendation test: {len(recommendations)} similar players found")
         except Exception as e:
-            print(f"   ⚠ Recommendation test skipped: {e}")
+            print(f"   ! Recommendation test skipped: {e}")
         
         processing_time = time.time() - start_time
         
-        print(f"\n✅ {model_name} model trained successfully in {processing_time:.1f}s")
+        print(f"\n{model_name} model trained successfully in {processing_time:.1f}s")
         
         return True, model, processing_time
         
     except Exception as e:
-        print(f"\n❌ Error training {model_name} model:")
+        print(f"\nError training {model_name} model:")
         print(f"   {str(e)}")
         import traceback
         traceback.print_exc()
         return False, None, 0
 
 
-def display_summary(male_success, male_time, female_success, female_time):
-    """Display training summary"""
-    print_header("📊 Training Summary")
-    
+def display_summary(results):
+    """Display training summary for the models that were requested"""
+    print_header("Training Summary")
+
     print("\nModels trained:")
-    if male_success:
-        print(f"  ✅ Male Players Model   - {male_time:.1f}s")
-    else:
-        print(f"  ❌ Male Players Model   - Failed")
-    
-    if female_success:
-        print(f"  ✅ Female Players Model - {female_time:.1f}s")
-    else:
-        print(f"  ❌ Female Players Model - Failed")
-    
-    total_time = (male_time if male_success else 0) + (female_time if female_success else 0)
+    for name, success, elapsed in results:
+        status = f"{elapsed:.1f}s" if success else "Failed"
+        print(f"  {name:<22} - {status}")
+
+    total_time = sum(elapsed for _, success, elapsed in results if success)
     
     print(f"\nTotal training time: {total_time:.1f}s")
     
-    if male_success or female_success:
-        print("\n✨ You can now run the application:")
+    if any(success for _, success, _ in results):
+        print("\nYou can now run the application:")
         print("   python run.py")
-        print("\n   Or:")
-        print("   cd app && python main.py")
     
     print("\n" + "=" * 70 + "\n")
 
@@ -156,6 +150,9 @@ def display_summary(male_success, male_time, female_success, female_time):
 def main():
     """Main training function"""
     
+    # Never crash on a console or log file that cannot encode a player's name
+    sys.stdout.reconfigure(errors='replace')
+
     # Parse command-line arguments
     parser = argparse.ArgumentParser(
         description='Train FIFA Player Recommendation Models',
@@ -198,18 +195,18 @@ Examples:
     
     # Check if at least one model will be trained
     if not train_male and not train_female:
-        print("❌ Error: No models selected for training!")
+        print("Error: No models selected for training!")
         print("   Use --male or --female to train specific models")
         sys.exit(1)
     
     # Display header
-    print_header("⚽ FIFA Player Recommendation System - Model Training")
+    print_header("FIFA Player Recommendation System - Model Training")
     
     print("\nModels to train:")
     if train_male:
-        print("  • Male Players Model")
+        print("  - Male Players Model")
     if train_female:
-        print("  • Female Players Model")
+        print("  - Female Players Model")
     
     # Define paths (relative to project root)
     male_data_path = os.path.join(project_root, 'new-data', 'male_players.csv')
@@ -224,7 +221,7 @@ Examples:
     female_time = 0
     
     if train_male:
-        print_header("🔵 Training Male Players Model")
+        print_header("Training Male Players Model")
         male_success, male_model, male_time = train_model(
             male_data_path, 
             "Male Players", 
@@ -232,7 +229,7 @@ Examples:
         )
     
     if train_female:
-        print_header("🟣 Training Female Players Model")
+        print_header("Training Female Players Model")
         female_success, female_model, female_time = train_model(
             female_data_path, 
             "Female Players", 
@@ -240,7 +237,12 @@ Examples:
         )
     
     # Display summary
-    display_summary(male_success, male_time, female_success, female_time)
+    results = []
+    if train_male:
+        results.append(("Male Players Model", male_success, male_time))
+    if train_female:
+        results.append(("Female Players Model", female_success, female_time))
+    display_summary(results)
     
     # Exit with appropriate code
     if (train_male and not male_success) or (train_female and not female_success):
