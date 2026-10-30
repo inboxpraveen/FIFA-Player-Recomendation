@@ -35,11 +35,11 @@ Smaller, faster and ready to deploy. Retrain once with `python training/train.py
 
 ## [2.0.0] - 2025-12-17
 
-### 🎉 Major Revamp
+### Major Revamp
 
 Complete project overhaul with modern architecture, new UI, and improved recommendation system.
 
-### ✨ Added
+### Added
 
 - **Dual Gender Models** - Separate male and female player recommendation systems
 - **Modern Glassmorphism UI** - Beautiful light theme with transparent effects
@@ -49,7 +49,7 @@ Complete project overhaul with modern architecture, new UI, and improved recomme
 - **Training Script** - Simple Python script (`training/train.py`) for model training
 - **Comprehensive Documentation** - README, Installation Guide, Training Guide, Technical Docs
 
-### 🚀 Improved
+### Improved
 
 - **Performance** - 10x faster recommendations with precomputed similarity matrices
 - **Architecture** - Industry-standard structure with clean separation of concerns
@@ -57,7 +57,7 @@ Complete project overhaul with modern architecture, new UI, and improved recomme
 - **Data Processing** - Automated cleaning, normalization, and feature extraction
 - **Error Handling** - Graceful error messages and validation
 
-### 📁 Project Structure
+### Project Structure
 
 ```
 FIFA-Player-Recomendation/
@@ -69,21 +69,21 @@ FIFA-Player-Recomendation/
 └── [documentation files]
 ```
 
-### 🗑️ Removed
+### Removed
 
 - Old Jupyter notebooks (replaced with Python training script)
 - Old analysis HTML pages
 - Old assets and static files
 - Redundant documentation files
 
-### 📊 Performance
+### Performance
 
 - Search: ~45ms (< 100ms target)
 - Recommendations: ~30ms (< 50ms target)
 - Comparison: ~15ms
 - Accuracy: ~94% similarity matching
 
-### 🛠️ Technology Stack
+### Technology Stack
 
 - **Backend:** Flask 3.0
 - **ML/AI:** scikit-learn, NumPy, Pandas
@@ -91,7 +91,7 @@ FIFA-Player-Recomendation/
 - **Charts:** Chart.js
 - **Dataset:** FC 25 (~17.5K total players)
 
-### 📚 Documentation
+### Documentation
 
 - README.md - Main documentation
 - training/README.md - Complete training guide
