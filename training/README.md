@@ -1,449 +1,115 @@
 # Model Training Guide
 
-Complete guide for training the FIFA Player Recommendation System models.
-
-## Quick Start
-
-**Train both models with one command:**
+`training/train.py` turns the player CSVs in `new-data/` into the two model files the app serves.
 
 ```bash
 python training/train.py
 ```
 
-That's it! Both models will be trained and saved to the `models/` directory.
+Both models are built and written to `models/` in about half a second.
 
----
-
-## Table of Contents
-
-1. [Training Options](#training-options)
-2. [What Happens During Training](#what-happens-during-training)
-3. [Training Output](#training-output)
-4. [System Requirements](#system-requirements)
-5. [Troubleshooting](#troubleshooting)
-6. [Advanced Usage](#advanced-usage)
-
----
-
-## Training Options
-
-### Train Both Models (Default)
+## Options
 
 ```bash
-python training/train.py
+python training/train.py                # both models (default)
+python training/train.py --male         # men's model only
+python training/train.py --female       # women's model only
+python training/train.py --skip-male    # everything except the men's model
+python training/train.py --skip-female  # everything except the women's model
 ```
 
-Trains both male and female player models.
+The script exits with status 1 if any requested model fails, so it can be used in scripts and Docker builds.
 
-**Output:**
-- `models/male_model.pkl` (~1 GB)
-- `models/female_model.pkl` (~10 MB)
+## What it produces
 
-**Time:** ~30-35 seconds total
+| File | Players | Features | Training time | Size |
+|------|---------|----------|---------------|------|
+| `models/male_model.pkl` | 16,034 | 35 | 0.4 s | 1.9 MB |
+| `models/female_model.pkl` | 1,575 | 35 | 0.1 s | 0.2 MB |
 
-### Train Male Model Only
+Measured on an Intel Core i7-14650HX laptop. Any machine that can run pandas will do; training needs well under 1 GB of RAM.
 
-```bash
-python training/train.py --male
-```
+## What happens
 
-**Use case:** When you only need male player recommendations.
+For each dataset the script:
 
-### Train Female Model Only
+1. **Loads** the CSV and drops the unnamed index columns.
+2. **Cleans** it: drops rows missing a rating or attribute, fills display fields, removes duplicate names and adds a position group (Goalkeeper, Defender, Midfielder, Forward).
+3. **Extracts** 35 numeric attributes: the six face stats and 29 detailed attributes.
+4. **Standardizes** each attribute to zero mean and unit variance, keeping the mean and std.
+5. **Saves** the player table, the float32 feature matrix and the scaling statistics with joblib.
+6. **Smoke-tests** the saved model: finds the top player, runs a search and asks for three recommendations.
 
-```bash
-python training/train.py --female
-```
+There is no similarity matrix to build. The app computes cosine similarity for one player against all others when a request comes in, which takes about 5 ms. [PROJECT_SUMMARY.md](../PROJECT_SUMMARY.md#recommendation-algorithm) explains the algorithm and why the attributes are standardized.
 
-**Use case:** When you only need female player recommendations.
-
-### Skip Specific Models
-
-```bash
-# Train female only (skip male)
-python training/train.py --skip-male
-
-# Train male only (skip female)
-python training/train.py --skip-female
-```
-
----
-
-## What Happens During Training
-
-### Step 1: Data Loading 📊
-- Loads player data from CSV files in `new-data/`
-- Validates data file existence and integrity
-- Displays player count
-
-### Step 2: Data Processing 🔧
-- Cleans data (removes missing values, duplicates)
-- Extracts 34 player attributes (PAC, SHO, PAS, DRI, DEF, PHY + sub-attributes)
-- Normalizes features to 0-1 scale using min-max normalization
-- Creates position categories (Goalkeeper, Defender, Midfielder, Forward)
-
-### Step 3: Model Training 🤖
-- Computes similarity matrix using cosine similarity
-- Precomputes all player-to-player similarities (n×n matrix)
-- This is the most time-intensive step
-
-### Step 4: Model Saving 💾
-- Saves model to disk using joblib
-- Includes: player data, features, similarity matrix
-
-### Step 5: Model Testing 🧪
-- Verifies model works correctly
-- Tests search functionality
-- Tests recommendation functionality
-
----
-
-## Training Output
-
-Example output when training both models:
+## Sample output
 
 ```
 ======================================================================
-  ⚽ FIFA Player Recommendation System - Model Training
+  Training Male Players Model
 ======================================================================
 
-Models to train:
-  • Male Players Model
-  • Female Players Model
+[1] Processing Male Players data...
+Cleaned data: 16034 players remaining
+   - Loaded 16034 players
+   - Extracted 35 features
+   - Feature matrix shape: (16034, 35)
 
-======================================================================
-  🔵 Training Male Players Model
-======================================================================
+[2] Training Male Players model...
+   - Indexed 16034 players for on-demand cosine similarity
 
-[📊] Processing Male Players data...
-   ✓ Loaded 16163 players
-   ✓ Extracted 34 features
-   ✓ Feature matrix shape: (16163, 34)
+[3] Saving Male Players model...
+Model saved to .../models/male_model.pkl
+   - Model saved: .../models/male_model.pkl
+   - File size: 1.9 MB
 
-[🤖] Training Male Players model...
-Computing similarity matrix...
-Similarity matrix computed: (16163, 16163)
-   ✓ Similarity matrix computed: (16163, 16163)
+[4] Testing Male Players model...
+   - Top player: Kylian Mbappé
+   - Search test: Found 5 players
+   - Recommendation test: 3 similar players found
 
-[💾] Saving Male Players model...
-Model saved to models/male_model.pkl
-   ✓ Model saved: models/male_model.pkl
-   ✓ File size: 1007.2 MB
-
-[🧪] Testing Male Players model...
-   ✓ Top player: Kylian Mbappé
-   ✓ Search test: Found 5 players
-   ✓ Recommendation test: 3 similar players found
-
-✅ Male Players model trained successfully in 28.3s
-
-======================================================================
-  🟣 Training Female Players Model
-======================================================================
-
-[📊] Processing Female Players data...
-   ✓ Loaded 1578 players
-   ✓ Extracted 34 features
-   ✓ Feature matrix shape: (1578, 34)
-
-[🤖] Training Female Players model...
-Computing similarity matrix...
-Similarity matrix computed: (1578, 1578)
-   ✓ Similarity matrix computed: (1578, 1578)
-
-[💾] Saving Female Players model...
-Model saved to models/female_model.pkl
-   ✓ Model saved: models/female_model.pkl
-   ✓ File size: 9.6 MB
-
-[🧪] Testing Female Players model...
-   ✓ Top player: Aitana Bonmatí
-   ✓ Search test: Found 5 players
-   ✓ Recommendation test: 3 similar players found
-
-✅ Female Players model trained successfully in 1.9s
-
-======================================================================
-  📊 Training Summary
-======================================================================
-
-Models trained:
-  ✅ Male Players Model   - 28.3s
-  ✅ Female Players Model - 1.9s
-
-Total training time: 30.2s
-
-✨ You can now run the application:
-   python run.py
-
-   Or:
-   cd app && python main.py
-
-======================================================================
+Male Players model trained successfully in 0.4s
 ```
 
----
+Output is plain ASCII apart from player names, so it can be piped to a log file on any platform.
 
-## System Requirements
+## Using a new dataset
 
-### Minimum
+Replace `new-data/male_players.csv` and `new-data/female_players.csv` with files that have the same column names (for example, a later FC release scraped in the same format) and run the script again. Old model files are overwritten. Restart the app, or the gunicorn workers, to load them.
 
-- **CPU:** 2 cores
-- **RAM:** 3 GB (male model requires ~2 GB during training)
-- **Storage:** 3 GB free space
-- **Python:** 3.8 or higher
-- **Time:** ~30-40 seconds
+The columns the pipeline needs are `Name`, `OVR`, `Position`, `Age`, `Nation`, `League`, `Team`, `Height`, `Weight`, `Preferred foot`, `Weak foot`, `Skill moves` and the 35 attributes listed in `DataProcessor.FEATURE_COLUMNS` in `src/data_processing.py`.
 
-### Recommended
-
-- **CPU:** 4+ cores
-- **RAM:** 4-8 GB
-- **Storage:** 5 GB free (SSD preferred)
-- **Python:** 3.9 or higher
-- **Time:** ~20-30 seconds
-
----
-
-## Troubleshooting
-
-### Error: "Data file not found"
-
-**Cause:** CSV files are missing or in wrong location
-
-**Solution:**
-```bash
-# Check if files exist
-ls new-data/
-# Should show: male_players.csv, female_players.csv
-
-# If missing, ensure you're in the project root directory
-cd FIFA-Player-Recomendation
-```
-
-### Error: "Memory Error" or "Killed"
-
-**Cause:** Insufficient RAM (especially for male model)
-
-**Solutions:**
-1. Close other applications to free up memory
-2. Train female model only (smaller): `python training/train.py --female`
-3. Use a machine with more RAM (recommended: 4GB+)
-4. Train on cloud (Google Colab, AWS)
-
-### Error: "Module not found"
-
-**Cause:** Dependencies not installed
-
-**Solution:**
-```bash
-pip install -r requirements.txt
-```
-
-### Training is Very Slow
-
-**Normal behavior:**
-- Male model: 25-35 seconds (16K players)
-- Female model: 1-3 seconds (1.5K players)
-
-**If significantly slower:**
-- Check CPU usage (should be ~100% during training)
-- Use SSD instead of HDD
-- Close background applications
-- Ensure sufficient RAM available
-
-### Model File Size is Large
-
-**This is expected:**
-- Male model: ~1 GB (contains 16K×16K similarity matrix)
-- Female model: ~10 MB (contains 1.5K×1.5K similarity matrix)
-
-**Why so large?**
-- Precomputed similarity matrix enables fast recommendations (< 50ms)
-- Trade-off: More disk space for faster inference
-- This is a design choice for optimal performance
-
----
-
-## Advanced Usage
-
-### Training in Python Script
+## Training from Python
 
 ```python
-import sys
-import os
-sys.path.insert(0, os.path.abspath('.'))
-
 from src.data_processing import DataProcessor
 from src.model import PlayerRecommender
 
-# Process data
-processor = DataProcessor()
-processed = processor.process_for_training('new-data/male_players.csv')
+processed = DataProcessor().process_for_training("new-data/female_players.csv")
 
-# Train model
 model = PlayerRecommender()
 model.fit(
-    data=processed['data'],
-    normalized_features=processed['normalized_features'],
-    feature_names=processed['feature_names']
+    data=processed["data"],
+    normalized_features=processed["normalized_features"],
+    feature_names=processed["feature_names"],
+    feature_mean=processed["feature_mean"],
+    feature_std=processed["feature_std"],
 )
+model.save("models/female_model.pkl")
 
-# Save model
-model.save('models/male_model.pkl')
-
-# Use model
-recommendations = model.recommend_similar('Kylian Mbappé', n_recommendations=10)
-print(f"Found {len(recommendations)} similar players")
+print(model.recommend_similar("Sam Kerr", n_recommendations=5))
 ```
 
-### Automated Training (CI/CD)
+## Models from version 2.0
 
-For automated training in CI/CD pipelines:
+Version 2.0 stored a full n x n similarity matrix, which made the men's model about 2 GB. Those files still load: the matrix is ignored and the features are re-standardized in memory, and the app prints a reminder. Run the training script once to replace them with the small format.
 
-```bash
-# Non-interactive mode
-python training/train.py > training.log 2>&1
+## Troubleshooting
 
-# Check exit code
-if [ $? -eq 0 ]; then
-    echo "Training successful"
-else
-    echo "Training failed"
-    exit 1
-fi
-```
+**`Data file not found`**: the CSVs must be at `new-data/male_players.csv` and `new-data/female_players.csv`. The script resolves paths from the project root, so it can be run from any directory.
 
-### Cloud Training
+**`ModuleNotFoundError`**: install the dependencies in the active environment with `pip install -r requirements.txt`.
 
-#### Google Colab
+**`KeyError` on a column name**: the CSV does not have the expected columns. Compare its header with the list above.
 
-```python
-# Clone repository
-!git clone https://github.com/inboxpraveen/FIFA-Player-Recomendation.git
-%cd FIFA-Player-Recomendation
-
-# Install dependencies
-!pip install -r requirements.txt
-
-# Train models
-!python training/train.py
-
-# Download trained models
-from google.colab import files
-files.download('models/male_model.pkl')
-files.download('models/female_model.pkl')
-```
-
-#### AWS EC2
-
-```bash
-# SSH into instance
-ssh -i key.pem ubuntu@ec2-instance
-
-# Clone and train
-git clone https://github.com/inboxpraveen/FIFA-Player-Recomendation.git
-cd FIFA-Player-Recomendation
-pip install -r requirements.txt
-python training/train.py
-```
-
----
-
-## Understanding the Algorithm
-
-### Content-Based Filtering
-
-The system uses **content-based filtering** with **cosine similarity**:
-
-1. **Feature Extraction:** Extract 34 numerical attributes for each player
-2. **Normalization:** Scale all features to 0-1 range
-3. **Similarity Computation:** Calculate cosine similarity between all player pairs
-4. **Precomputation:** Store similarity matrix for fast lookups
-
-### Why Cosine Similarity?
-
-```
-similarity(A, B) = (A · B) / (||A|| × ||B||)
-```
-
-**Advantages:**
-- Scale-invariant (focuses on playing style, not absolute values)
-- Fast to compute with vectorization
-- Works well in high-dimensional spaces
-- Range: 0 (different) to 1 (identical)
-
-### Time Complexity
-
-- **Training:** O(n²·d) where n=players, d=features (34)
-- **Recommendation:** O(n) with precomputation (just lookup + filter)
-- **Without precomputation:** O(n·d) per query (much slower)
-
-**Result:** < 50ms recommendations instead of ~500ms
-
----
-
-## Re-training
-
-### When to Re-train
-
-- ✅ New player data available (FC 26, etc.)
-- ✅ Dataset updated with transfers
-- ✅ Algorithm improvements
-- ✅ Different feature weights needed
-
-### How to Re-train
-
-```bash
-# Simply run the training script again
-python training/train.py
-
-# Old models will be overwritten
-```
-
----
-
-## Verification
-
-After training, verify models exist and work:
-
-```bash
-# Check files
-ls -lh models/
-# Should show: male_model.pkl (~1GB), female_model.pkl (~10MB)
-
-# Test models by running the app
-python run.py
-
-# Access in browser
-# http://localhost:5000
-```
-
----
-
-## Next Steps
-
-1. ✅ **Verify models exist:** `ls models/`
-2. ✅ **Run the application:** `python run.py`
-3. ✅ **Test features:** Search, recommend, compare players
-4. ✅ **Switch genders:** Toggle between male/female datasets
-
----
-
-## Getting Help
-
-**Issues during training?**
-
-1. Check this guide's [Troubleshooting](#troubleshooting) section
-2. Ensure you meet [System Requirements](#system-requirements)
-3. Verify dependencies: `pip install -r requirements.txt`
-4. Check [GitHub Issues](https://github.com/inboxpraveen/FIFA-Player-Recomendation/issues)
-
-**Still stuck?** Open a new issue with:
-- Your OS and Python version
-- Full error message
-- Steps to reproduce
-
----
-
-**Made with ⚽ by [Praveen Kumar](https://github.com/inboxpraveen)**
-
+**The app still shows old results**: restart it. Models are loaded once at startup.

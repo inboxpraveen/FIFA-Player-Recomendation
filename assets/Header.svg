@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" width="1600" height="500" role="img" aria-label="FIFA Player Recommendation System: pick a player and get the players with the most similar attribute profile">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04130d"/>
+      <stop offset="1" stop-color="#0b2f23"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.45" r="0.6">
+      <stop offset="0" stop-color="#10b981" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="lines" width="80" height="80" patternUnits="userSpaceOnUse">
+      <rect width="40" height="80" fill="#ffffff" fill-opacity="0.018"/>
+    </pattern>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#6ee7b7"/>
+    </linearGradient>
+  </defs>
+  <style>
+    text { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  </style>
+
+  <rect width="1600" height="500" fill="url(#bg)"/>
+  <rect width="1600" height="500" fill="url(#lines)"/>
+  <rect width="1600" height="500" fill="url(#glow)"/>
+
+  <g transform="translate(88 66) scale(0.34)">
+    <rect width="256" height="256" rx="56" fill="url(#mark)"/>
+    <g fill="none" stroke="#ffffff" stroke-linejoin="round">
+      <polygon points="128.0,46.0 204.2,90.0 204.2,178.0 128.0,222.0 51.8,178.0 51.8,90.0" stroke-opacity="0.45" stroke-width="5"/>
+      <polygon points="128.0,90.0 166.1,112.0 166.1,156.0 128.0,178.0 89.9,156.0 89.9,112.0" stroke-opacity="0.25" stroke-width="3"/>
+      <g stroke-opacity="0.22" stroke-width="3"><line x1="128" y1="134" x2="128.0" y2="46.0"/><line x1="128" y1="134" x2="204.2" y2="90.0"/><line x1="128" y1="134" x2="204.2" y2="178.0"/><line x1="128" y1="134" x2="128.0" y2="222.0"/><line x1="128" y1="134" x2="51.8" y2="178.0"/><line x1="128" y1="134" x2="51.8" y2="90.0"/></g>
+    </g>
+    <polygon points="128.0,72.4 196.6,94.4 187.4,168.3 128.0,186.8 64.0,171.0 85.3,109.4" fill="#fbbf24" fill-opacity="0.22" stroke="#fbbf24" stroke-width="7" stroke-linejoin="round"/>
+    <polygon points="128.0,53.0 189.0,98.8 173.7,160.4 128.0,209.7 77.7,163.0 70.1,100.6" fill="#ffffff" fill-opacity="0.3" stroke="#ffffff" stroke-width="7" stroke-linejoin="round"/>
+    <circle cx="128.0" cy="53.0" r="8" fill="#ffffff"/><circle cx="189.0" cy="98.8" r="8" fill="#ffffff"/><circle cx="173.7" cy="160.4" r="8" fill="#ffffff"/><circle cx="128.0" cy="209.7" r="8" fill="#ffffff"/><circle cx="77.7" cy="163.0" r="8" fill="#ffffff"/><circle cx="70.1" cy="100.6" r="8" fill="#ffffff"/>
+  </g>
+
+  <text x="88" y="232" font-size="62" font-weight="700" fill="#ffffff">FIFA Player</text>
+  <text x="88" y="300" font-size="62" font-weight="700" fill="#6ee7b7">Recommendation System</text>
+  <text x="88" y="352" font-size="25" fill="#a7f3d0">Pick a player, get the players who play most like them.</text>
+  <text x="88" y="388" font-size="25" fill="#a7f3d0">Cosine similarity over 35 standardized FC 25 attributes,</text>
+  <text x="88" y="424" font-size="25" fill="#a7f3d0">served by a Flask app and JSON API in milliseconds.</text>
+
+  <g transform="translate(930 66)">
+    <rect width="600" height="392" rx="22" fill="#071d15" stroke="#065f46" stroke-width="2"/>
+    <text x="32" y="50" font-size="16" font-weight="600" fill="#34d399" letter-spacing="1.5">PLAYERS LIKE</text>
+    <text x="32" y="90" font-size="32" font-weight="700" fill="#ffffff">Virgil van Dijk</text>
+    <text x="568" y="90" font-size="20" fill="#86efac" fill-opacity="0.75" text-anchor="end">CB  ·  89  ·  Liverpool</text>
+    <line x1="32" y1="110" x2="568" y2="110" stroke="#065f46" stroke-width="2"/>
+    <text x="32" y="144" font-size="21" font-weight="600" fill="#ffffff">Antonio Rüdiger</text>
+    <text x="32" y="165" font-size="14" fill="#86efac" fill-opacity="0.75">CB  ·  88  ·  Real Madrid</text>
+    <rect x="352" y="130" width="150" height="10" rx="5" fill="#ffffff" fill-opacity="0.08"/>
+    <rect x="352" y="130" width="89" height="10" rx="5" fill="url(#bar)"/>
+    <text x="568" y="140" font-size="19" font-weight="700" fill="#fbbf24" text-anchor="end">95.9%</text>
+    <text x="32" y="196" font-size="21" font-weight="600" fill="#ffffff">Manuel Akanji</text>
+    <text x="32" y="217" font-size="14" fill="#86efac" fill-opacity="0.75">CB  ·  84  ·  Manchester City</text>
+    <rect x="352" y="182" width="150" height="10" rx="5" fill="#ffffff" fill-opacity="0.08"/>
+    <rect x="352" y="182" width="78" height="10" rx="5" fill="url(#bar)"/>
+    <text x="568" y="192" font-size="19" font-weight="700" fill="#fbbf24" text-anchor="end">95.2%</text>
+    <text x="32" y="248" font-size="21" font-weight="600" fill="#ffffff">Dávid Hancko</text>
+    <text x="32" y="269" font-size="14" fill="#86efac" fill-opacity="0.75">CB  ·  81  ·  Feyenoord</text>
+    <rect x="352" y="234" width="150" height="10" rx="5" fill="#ffffff" fill-opacity="0.08"/>
+    <rect x="352" y="234" width="60" height="10" rx="5" fill="url(#bar)"/>
+    <text x="568" y="244" font-size="19" font-weight="700" fill="#fbbf24" text-anchor="end">94.0%</text>
+    <text x="32" y="300" font-size="21" font-weight="600" fill="#ffffff">Nicolò Casale</text>
+    <text x="32" y="321" font-size="14" fill="#86efac" fill-opacity="0.75">CB  ·  77  ·  Bologna</text>
+    <rect x="352" y="286" width="150" height="10" rx="5" fill="#ffffff" fill-opacity="0.08"/>
+    <rect x="352" y="286" width="59" height="10" rx="5" fill="url(#bar)"/>
+    <text x="568" y="296" font-size="19" font-weight="700" fill="#fbbf24" text-anchor="end">93.9%</text>
+    <text x="32" y="352" font-size="21" font-weight="600" fill="#ffffff">Nathan Aké</text>
+    <text x="32" y="373" font-size="14" fill="#86efac" fill-opacity="0.75">CB  ·  84  ·  Manchester City</text>
+    <rect x="352" y="338" width="150" height="10" rx="5" fill="#ffffff" fill-opacity="0.08"/>
+    <rect x="352" y="338" width="54" height="10" rx="5" fill="url(#bar)"/>
+    <text x="568" y="348" font-size="19" font-weight="700" fill="#fbbf24" text-anchor="end">93.6%</text>
+  </g>
+</svg>

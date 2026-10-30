@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="FIFA Player Recommendation System: find similar football players with cosine similarity">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04130d"/>
+      <stop offset="1" stop-color="#0b2f23"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.45" r="0.6">
+      <stop offset="0" stop-color="#10b981" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="lines" width="80" height="80" patternUnits="userSpaceOnUse">
+      <rect width="40" height="80" fill="#ffffff" fill-opacity="0.018"/>
+    </pattern>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset="1" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+  <style>
+    text { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  </style>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect width="1280" height="640" fill="url(#lines)"/>
+  <rect width="1280" height="640" fill="url(#glow)"/>
+
+  <g transform="translate(866 176) scale(1.25)">
+    <rect width="256" height="256" rx="56" fill="url(#mark)"/>
+    <g fill="none" stroke="#ffffff" stroke-linejoin="round">
+      <polygon points="128.0,46.0 204.2,90.0 204.2,178.0 128.0,222.0 51.8,178.0 51.8,90.0" stroke-opacity="0.45" stroke-width="5"/>
+      <polygon points="128.0,90.0 166.1,112.0 166.1,156.0 128.0,178.0 89.9,156.0 89.9,112.0" stroke-opacity="0.25" stroke-width="3"/>
+      <g stroke-opacity="0.22" stroke-width="3"><line x1="128" y1="134" x2="128.0" y2="46.0"/><line x1="128" y1="134" x2="204.2" y2="90.0"/><line x1="128" y1="134" x2="204.2" y2="178.0"/><line x1="128" y1="134" x2="128.0" y2="222.0"/><line x1="128" y1="134" x2="51.8" y2="178.0"/><line x1="128" y1="134" x2="51.8" y2="90.0"/></g>
+    </g>
+    <polygon points="128.0,72.4 196.6,94.4 187.4,168.3 128.0,186.8 64.0,171.0 85.3,109.4" fill="#fbbf24" fill-opacity="0.22" stroke="#fbbf24" stroke-width="7" stroke-linejoin="round"/>
+    <polygon points="128.0,53.0 189.0,98.8 173.7,160.4 128.0,209.7 77.7,163.0 70.1,100.6" fill="#ffffff" fill-opacity="0.3" stroke="#ffffff" stroke-width="7" stroke-linejoin="round"/>
+    <circle cx="128.0" cy="53.0" r="8" fill="#ffffff"/><circle cx="189.0" cy="98.8" r="8" fill="#ffffff"/><circle cx="173.7" cy="160.4" r="8" fill="#ffffff"/><circle cx="128.0" cy="209.7" r="8" fill="#ffffff"/><circle cx="77.7" cy="163.0" r="8" fill="#ffffff"/><circle cx="70.1" cy="100.6" r="8" fill="#ffffff"/>
+  </g>
+
+  <text x="88" y="158" font-size="22" font-weight="600" fill="#34d399" letter-spacing="2">OPEN SOURCE  ·  MIT</text>
+  <text x="88" y="236" font-size="66" font-weight="700" fill="#ffffff">FIFA Player</text>
+  <text x="88" y="310" font-size="66" font-weight="700" fill="#6ee7b7">Recommendation</text>
+  <text x="88" y="370" font-size="27" fill="#a7f3d0">Find players who play alike, compare them on</text>
+  <text x="88" y="408" font-size="27" fill="#a7f3d0">radar charts, and serve it all as a JSON API.</text>
+  
+  <rect x="88" y="452" width="168" height="44" rx="22" fill="#10b981" fill-opacity="0.14" stroke="#10b981" stroke-opacity="0.6" stroke-width="1.5"/>
+  <text x="172" y="481" font-size="19" font-weight="600" fill="#a7f3d0" text-anchor="middle">35 attributes</text>
+  <rect x="269.6" y="452" width="168" height="44" rx="22" fill="#10b981" fill-opacity="0.14" stroke="#10b981" stroke-opacity="0.6" stroke-width="1.5"/>
+  <text x="353" y="481" font-size="19" font-weight="600" fill="#a7f3d0" text-anchor="middle">17.6K players</text>
+  <rect x="451.20000000000005" y="452" width="190" height="44" rx="22" fill="#10b981" fill-opacity="0.14" stroke="#10b981" stroke-opacity="0.6" stroke-width="1.5"/>
+  <text x="546" y="481" font-size="19" font-weight="600" fill="#a7f3d0" text-anchor="middle">~5 ms per query</text>
+  <rect x="655.2" y="452" width="168" height="44" rx="22" fill="#10b981" fill-opacity="0.14" stroke="#10b981" stroke-opacity="0.6" stroke-width="1.5"/>
+  <text x="739" y="481" font-size="19" font-weight="600" fill="#a7f3d0" text-anchor="middle">Flask + NumPy</text>
+  <text x="88" y="572" font-size="20" fill="#86efac" fill-opacity="0.7">github.com/inboxpraveen/FIFA-Player-Recomendation</text>
+</svg>

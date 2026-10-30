@@ -1,130 +1,80 @@
-# Contributing to FIFA Player Recommendation System
+# Contributing
 
-Thank you for your interest in contributing! This document provides guidelines for contributing to the project.
+Thanks for your interest in improving the FIFA Player Recommendation System. Bug reports, fixes, new features and documentation are all welcome.
 
-## 🚀 Getting Started
+## Getting started
 
-1. **Fork the repository**
-2. **Clone your fork**
+1. Fork the repository and clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/FIFA-Player-Recomendation.git
+   git clone https://github.com/<your-username>/FIFA-Player-Recomendation.git
    cd FIFA-Player-Recomendation
    ```
-3. **Create a branch**
+2. Create a branch:
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
-## 💻 Development Setup
+## Development setup
 
-1. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+conda create -n fifa-rec python=3.12 -y    # or: python -m venv .venv
+conda activate fifa-rec
+pip install -r requirements.txt pytest
+python training/train.py
+python run.py
+```
 
-2. **Train models**
-   ```bash
-   python training/train.py
-   ```
+The app runs at http://localhost:5000.
 
-3. **Run the app**
-   ```bash
-   python run.py
-   ```
+## Tests
 
-## 📝 Coding Standards
+```bash
+python -m pytest
+```
 
-### Python
-- Follow PEP 8 style guide
-- Use type hints where applicable
-- Add docstrings to all functions/classes
-- Keep functions focused and small
-- Use meaningful variable names
+The suite trains on the women's dataset in memory, so it runs in about a second and does not need `models/`. Add or update tests for any change to `src/` or `app/main.py`. For UI changes, check both themes, both datasets and a narrow mobile viewport, and keep the browser console free of errors.
 
-### JavaScript
-- Use ES6+ features
-- Use camelCase for variables/functions
-- Add comments for complex logic
-- Keep functions pure when possible
+## Coding standards
 
-### CSS
-- Use BEM naming convention
-- Group related properties
-- Use CSS variables for colors
-- Mobile-first responsive design
+**Python**
+- Follow PEP 8 and match the style of the surrounding code.
+- Use type hints and docstrings on public functions.
+- Keep heavy work out of the request path. Anything per-player belongs in training or in vectorized NumPy, not in a Python loop over rows.
+- Never return exception text to API clients; use `server_error()` in `app/main.py`.
 
-## 🧪 Testing
+**JavaScript and CSS**
+- Plain ES6+, no build step.
+- Insert user-visible text with `textContent`, not `innerHTML`, unless the content is from the dataset.
+- Use the CSS variables for colours so both themes keep working.
 
-Before submitting:
-1. Test all API endpoints
-2. Verify UI on different screen sizes
-3. Check console for errors
-4. Test with both male and female datasets
+## Pull requests
 
-## 📬 Submitting Changes
+1. Keep each pull request focused on one change.
+2. Describe what changed and why, and link the related issue.
+3. Add screenshots for UI changes.
+4. Update the README or other docs if behaviour, the API or measured figures change.
 
-1. **Commit your changes**
-   ```bash
-   git add .
-   git commit -m "Add: Brief description of changes"
-   ```
+**Checklist**
 
-2. **Push to your fork**
-   ```bash
-   git push origin feature/your-feature-name
-   ```
+- [ ] `python -m pytest` passes
+- [ ] Works with both the men's and women's datasets
+- [ ] Docs updated where needed
+- [ ] No new dependencies unless they are clearly needed
 
-3. **Create a Pull Request**
-   - Provide clear description
-   - Reference any related issues
-   - Add screenshots if UI changes
+## Reporting bugs and requesting features
 
-## 🐛 Reporting Bugs
+Open a [GitHub issue](https://github.com/inboxpraveen/FIFA-Player-Recomendation/issues) with steps to reproduce, expected and actual behaviour, and your OS and Python version. For feature requests, describe the use case first.
 
-Use GitHub Issues and include:
-- Description of the bug
-- Steps to reproduce
-- Expected vs actual behavior
-- Screenshots (if applicable)
-- Environment details (OS, Python version, etc.)
+Security problems should be reported privately. See [SECURITY.md](SECURITY.md).
 
-## 💡 Feature Requests
+## Good places to start
 
-Open a GitHub Issue with:
-- Clear feature description
-- Use case/motivation
-- Proposed implementation (optional)
+- Use the goalkeeper attributes (`GK Diving`, `GK Handling` and others) when comparing goalkeepers
+- Per-role attribute weights, for example favouring defending attributes for centre-backs
+- A name matcher that handles accents and duplicate names better
+- Support for newer FC datasets
+- Translations of the UI
 
-## 📋 Areas for Contribution
+## Code of conduct
 
-- **Algorithm improvements** - Better recommendation algorithms
-- **UI enhancements** - Design improvements, animations
-- **New features** - Squad builder, career mode tracking
-- **Performance** - Optimization, caching
-- **Documentation** - Tutorials, examples, translations
-- **Testing** - Unit tests, integration tests
-
-## ✅ Pull Request Checklist
-
-- [ ] Code follows project style guidelines
-- [ ] Comments added for complex logic
-- [ ] Documentation updated (if needed)
-- [ ] Tested locally
-- [ ] No console errors
-- [ ] Responsive design maintained
-- [ ] Works with both datasets
-
-## 🤝 Code of Conduct
-
-- Be respectful and inclusive
-- Welcome newcomers
-- Focus on constructive feedback
-- Maintain professionalism
-
-## 📞 Questions?
-
-- Open a GitHub Issue
-- Contact: [@inboxpraveen](https://github.com/inboxpraveen)
-
-Thank you for contributing! 🎉
-
+Be respectful, assume good intent, and keep feedback constructive. Newcomers are welcome.
